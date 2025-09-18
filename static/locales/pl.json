@@ -215,8 +215,8 @@
       "qrCodeBottom": "Edge na urządzenia mobilne",
       "holdToSpeedUpTooltip": "Przytrzymaj wideo, aby tymczasowo przyspieszyć",
       "holdToSpeedUp": "Przytrzymaj, aby przyspieszyć",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "Wymuś normalną prędkość na transmisjach na żywo w YouTube",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "Utrzymuj odtwarzanie zablokowane na 1× po wykryciu transmisji na żywo w YouTube."
     },
     "editor": {
       "header": "Edytor skrótów",

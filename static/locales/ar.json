@@ -215,8 +215,8 @@
       "qrCodeBottom": "إيدج للجوال",
       "holdToSpeedUpTooltip": "اضغط مطولاً على الفيديو لتسريعه مؤقتًا.",
       "holdToSpeedUp": "اضغط مع الاستمرار للتسريع",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "فرض السرعة العادية على بثوث YouTube المباشرة",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "ثبّت التشغيل على سرعة ‎1×‎ عند اكتشاف بث مباشر على YouTube."
     },
     "editor": {
       "header": "محرر الاختصارات",

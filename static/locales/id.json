@@ -214,8 +214,8 @@
       "qrCodeBottom": "Edge untuk seluler",
       "holdToSpeedUpTooltip": "Tekan dan tahan video untuk mempercepat sementara.",
       "holdToSpeedUp": "Tekan dan tahan untuk mempercepat",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "Paksa kecepatan normal pada YouTube Live",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "Tetap mengunci pemutaran di 1× setiap kali siaran langsung YouTube terdeteksi."
     },
     "editor": {
       "header": "Editor Pintasan",

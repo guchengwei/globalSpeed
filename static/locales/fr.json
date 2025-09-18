@@ -215,8 +215,8 @@
       "qrCodeBottom": "Edge pour mobile",
       "holdToSpeedUpTooltip": "Maintenez la vidéo pour accélérer temporairement.",
       "holdToSpeedUp": "Appuyez et maintenez pour accélérer",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "Imposer la vitesse normale sur les lives YouTube",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "Verrouille la lecture à 1× dès qu’un live YouTube est détecté."
     },
     "editor": {
       "header": "Éditeur de raccourcis",

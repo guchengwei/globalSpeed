@@ -36,12 +36,12 @@ export function SectionFlags(props: {}) {
       })
   }, [])
 
-  const [view, setView] = useStateView({language: true, darkTheme: true, fontSize: true, hideBadge: true, pinByDefault: true, initialContext: true, ghostMode: true, ghostModeUrlCondition: true, hideMediaView: true, freePitch: true, speedSlider: true, virtualInput: true, circleWidget: true, holdToSpeed: true, blockYoutubeLiveSpeed: true})
+  const [view, setView] = useStateView({language: true, darkTheme: true, fontSize: true, hideBadge: true, pinByDefault: true, initialContext: true, ghostMode: true, ghostModeUrlCondition: true, hideMediaView: true, freePitch: true, speedSlider: true, virtualInput: true, circleWidget: true, holdToSpeed: true, enforceNormalSpeedOnYoutubeLive: true})
   const [ viewAlt ] = useStateView({indicatorInit: true, hideIndicator: true})
   if (!view || !viewAlt) return <div></div>
 
   const defaultSlider = getDefaultSpeedSlider()
-  const blockYoutubeLiveEnabled = view.blockYoutubeLiveSpeed !== false
+  const enforceNormalSpeedOnYoutubeLiveEnabled = view.enforceNormalSpeedOnYoutubeLive !== false
 
   return (
     <div className="section SectionFlags">
@@ -260,14 +260,14 @@ export function SectionFlags(props: {}) {
             )}
         </div>        
 
-        {/* YouTube live block */}
+        {/* YouTube live enforce */}
         <div className="field marginTop">
           <div className="labelWithTooltip">
-            <span>{gvar.gsm.options.flags.blockYoutubeLive}</span>
-            <RegularTooltip title={gvar.gsm.options.flags.blockYoutubeLiveTooltip} align="right"/>
+            <span>{gvar.gsm.options.flags.enforceNormalSpeedOnYoutubeLive}</span>
+            <RegularTooltip title={gvar.gsm.options.flags.enforceNormalSpeedOnYoutubeLiveTooltip} align="right"/>
           </div>
-          <Toggle value={blockYoutubeLiveEnabled} onChange={() => {
-            setView({blockYoutubeLiveSpeed: !blockYoutubeLiveEnabled})
+          <Toggle value={enforceNormalSpeedOnYoutubeLiveEnabled} onChange={() => {
+            setView({enforceNormalSpeedOnYoutubeLive: !enforceNormalSpeedOnYoutubeLiveEnabled})
           }}/>
         </div>
 

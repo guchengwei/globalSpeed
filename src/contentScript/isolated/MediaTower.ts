@@ -17,7 +17,7 @@ export class MediaTower {
   observer: IntersectionObserver
   trackFps = true 
   previousTimeUpdate: TimeUpdateInfo
-  blockYoutubeLiveSpeed = true
+  enforceNormalSpeedOnYoutubeLive = true
 
   constructor() {
     this.processDoc(window)
@@ -245,7 +245,7 @@ export class MediaTower {
     if (!speed) return
     speed = conformSpeed(speed)
     this.media.forEach(media => {
-      if (IS_YOUTUBE && media instanceof HTMLVideoElement && this.blockYoutubeLiveSpeed) {
+      if (IS_YOUTUBE && media instanceof HTMLVideoElement && this.enforceNormalSpeedOnYoutubeLive) {
         const shouldReset = shouldBlockSpeedForYoutube(media)
         if (shouldReset) {
           media.removeAttribute("yss-skip")

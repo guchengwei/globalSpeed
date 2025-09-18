@@ -51,7 +51,7 @@ export function getDefaultState(): State {
     websitesAddedToUrlConditionsExclusion: SHORTCUT_DISABLED_WEBSITES.map(w => turnWebsiteInfoIntoString(w)),
     hideMediaView: isMobile(),
     holdToSpeed: isMobile() ? 2 : undefined,
-    blockYoutubeLiveSpeed: true
+    enforceNormalSpeedOnYoutubeLive: true
   } as State;
 
   return state 

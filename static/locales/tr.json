@@ -215,8 +215,8 @@
       "qrCodeBottom": "Mobil için Edge",
       "holdToSpeedUpTooltip": "Videoları geçici olarak hızlandırmak için basılı tutun.",
       "holdToSpeedUp": "Hızlandırmak için basılı tutun",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "YouTube canlı yayınlarda normal hızı zorunlu kıl",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "YouTube canlı yayını algılandığında oynatmayı 1× hızında sabitler."
     },
     "editor": {
       "header": "Kısayol Düzenleyici",

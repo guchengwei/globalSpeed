@@ -93,7 +93,7 @@ export type State = {
   circleInit?: CircleInit,
   freshKeybinds?: boolean,
   holdToSpeed?: number,
-  blockYoutubeLiveSpeed?: boolean
+  enforceNormalSpeedOnYoutubeLive?: boolean
 } & Context
 
 export type StoredKey = `${"t" | "r"}:${number}:${keyof Context | "isPinned"}` | `${"g" | "x"}:${keyof State}`; 

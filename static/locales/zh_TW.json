@@ -216,8 +216,8 @@
       "qrCodeBottom": "Edge 手機版",
       "holdToSpeedUpTooltip": "按住影片可暫時加速播放。",
       "holdToSpeedUp": "按住加速",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "在 YouTube 直播上強制正常速度",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "偵測到 YouTube 直播時將播放速度鎖定為 1×。"
     },
     "editor": {
       "header": "快速鍵編輯器",

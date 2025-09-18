@@ -215,8 +215,8 @@
       "qrCodeBottom": "Edge für Mobilgeräte",
       "holdToSpeedUpTooltip": "Gedrückt halten, um Videos vorübergehend zu beschleunigen.",
       "holdToSpeedUp": "Gedrückt halten zum Beschleunigen",
-      "blockYoutubeLive": "Block speed on YouTube live",
-      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
+      "enforceNormalSpeedOnYoutubeLive": "Normale Geschwindigkeit bei YouTube-Livestreams erzwingen",
+      "enforceNormalSpeedOnYoutubeLiveTooltip": "Sperrt die Wiedergabe bei 1×, sobald ein YouTube-Livestream erkannt wird."
     },
     "editor": {
       "header": "Tastenkombinationen-Editor",
