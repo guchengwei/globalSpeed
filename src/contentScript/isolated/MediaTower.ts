@@ -5,6 +5,7 @@ import { generateScopeState } from "./utils/genMediaInfo";
 import { IS_YOUTUBE } from "./utils/isWebsite";
 import debounce from "lodash.debounce";
 import { getShadow } from "src/utils/nativeUtils";
+import { shouldBlockSpeedForYoutube } from "./utils/youtubeLiveState";
 
 
 export class MediaTower {
@@ -240,12 +241,32 @@ export class MediaTower {
     })
   }
   applySpeedToAll = (speed: number, freePitch: boolean) => {
-    if (!speed) return 
+    if (!speed) return
     speed = conformSpeed(speed)
     this.media.forEach(media => {
+      if (IS_YOUTUBE && media instanceof HTMLVideoElement) {
+        const shouldBlock = shouldBlockSpeedForYoutube(media)
+        if (shouldBlock) {
+          if (!media.hasAttribute("yss-skip")) {
+            media.setAttribute("yss-skip", "")
+            resetYoutubeRate(media)
+          }
+          return
+        }
+        media.removeAttribute("yss-skip")
+      }
       applyMediaEvent(media, {type: "PLAYBACK_RATE", value: speed, freePitch})
     })
   }
+}
+
+function resetYoutubeRate(video: HTMLVideoElement) {
+  try {
+    if (Math.abs(video.playbackRate - 1) > 0.001) video.playbackRate = 1
+  } catch (err) {}
+  try {
+    if (Math.abs(video.defaultPlaybackRate - 1) > 0.001) video.defaultPlaybackRate = 1
+  } catch (err) {}
 }
 
 type TimeUpdateInfo = {

@@ -23,9 +23,15 @@ _Audio Effects [Chromium Only]_
 
 <img src="https://github.com/polywock/globalSpeed/blob/master/screenshot.png?raw=true" width="600">
 
-## Build 
-1. `npm install` to install required dependencies. 
-1. `npm run build:dev` build unpacked version. 
+## Build
+1. `npm install` to install required dependencies.
+1. `npm run build:dev` build unpacked version.
 1. Load the unpacked folder
-   1. Chrome: open extensions page, enable dev mode, load unpacked. 
+   1. Chrome: open extensions page, enable dev mode, load unpacked.
    1. Edge: open extensions page, load unpacked.
+
+### One-step setup script
+Run `tools/setup-and-build.sh` from the repository root to verify your Node.js
+installation (requires Node 20+), install dependencies, and build the unpacked
+extension automatically. The generated bundle will be available in
+`build/unpacked/` for loading into your browser.
