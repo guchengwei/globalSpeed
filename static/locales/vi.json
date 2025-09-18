@@ -214,7 +214,9 @@
       "qrCodeTop": "Quét để sử dụng trên...",
       "qrCodeBottom": "Edge cho di động",
       "holdToSpeedUpTooltip": "Nhấn và giữ video để tạm thời tăng tốc.",
-      "holdToSpeedUp": "Nhấn và giữ để tăng tốc"
+      "holdToSpeedUp": "Nhấn và giữ để tăng tốc",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "Chỉnh sửa phím tắt",

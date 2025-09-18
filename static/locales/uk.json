@@ -214,7 +214,9 @@
       "qrCodeTop": "Скануйте для використання",
       "qrCodeBottom": "Edge для мобільних",
       "holdToSpeedUpTooltip": "Натисніть і утримуйте відео для тимчасового прискорення.",
-      "holdToSpeedUp": "Натисніть і утримуйте для прискорення"
+      "holdToSpeedUp": "Натисніть і утримуйте для прискорення",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "Редактор ярликів",

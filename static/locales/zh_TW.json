@@ -215,7 +215,9 @@
       "qrCodeTop": "掃碼使用",
       "qrCodeBottom": "Edge 手機版",
       "holdToSpeedUpTooltip": "按住影片可暫時加速播放。",
-      "holdToSpeedUp": "按住加速"
+      "holdToSpeedUp": "按住加速",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "快速鍵編輯器",

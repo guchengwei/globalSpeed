@@ -36,11 +36,12 @@ export function SectionFlags(props: {}) {
       })
   }, [])
 
-  const [view, setView] = useStateView({language: true, darkTheme: true, fontSize: true, hideBadge: true, pinByDefault: true, initialContext: true, ghostMode: true, ghostModeUrlCondition: true, hideMediaView: true, freePitch: true, speedSlider: true, virtualInput: true, circleWidget: true, holdToSpeed: true})
+  const [view, setView] = useStateView({language: true, darkTheme: true, fontSize: true, hideBadge: true, pinByDefault: true, initialContext: true, ghostMode: true, ghostModeUrlCondition: true, hideMediaView: true, freePitch: true, speedSlider: true, virtualInput: true, circleWidget: true, holdToSpeed: true, blockYoutubeLiveSpeed: true})
   const [ viewAlt ] = useStateView({indicatorInit: true, hideIndicator: true})
   if (!view || !viewAlt) return <div></div>
 
   const defaultSlider = getDefaultSpeedSlider()
+  const blockYoutubeLiveEnabled = view.blockYoutubeLiveSpeed !== false
 
   return (
     <div className="section SectionFlags">
@@ -258,6 +259,17 @@ export function SectionFlags(props: {}) {
               <Toggle value={false} onChange={() => setView({holdToSpeed: 2})}/>
             )}
         </div>        
+
+        {/* YouTube live block */}
+        <div className="field marginTop">
+          <div className="labelWithTooltip">
+            <span>{gvar.gsm.options.flags.blockYoutubeLive}</span>
+            <RegularTooltip title={gvar.gsm.options.flags.blockYoutubeLiveTooltip} align="right"/>
+          </div>
+          <Toggle value={blockYoutubeLiveEnabled} onChange={() => {
+            setView({blockYoutubeLiveSpeed: !blockYoutubeLiveEnabled})
+          }}/>
+        </div>
 
         {!showMore ? <Tooltip withClass="showMoreTooltip" align="top" title={gvar.gsm.token.more}><button onClick={() => setShowMore(true)}>...</button></Tooltip> : <>
           {!isMobile() && <>

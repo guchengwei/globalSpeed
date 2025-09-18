@@ -50,7 +50,8 @@ export function getDefaultState(): State {
     keybindsUrlCondition: getDefaultKeybindsUrlConditions(),
     websitesAddedToUrlConditionsExclusion: SHORTCUT_DISABLED_WEBSITES.map(w => turnWebsiteInfoIntoString(w)),
     hideMediaView: isMobile(),
-    holdToSpeed: isMobile() ? 2 : undefined
+    holdToSpeed: isMobile() ? 2 : undefined,
+    blockYoutubeLiveSpeed: true
   } as State;
 
   return state 

@@ -215,7 +215,9 @@ export type Gsm = {
       qrCodeTop: string,
       qrCodeBottom: string,
       holdToSpeedUp: string,
-      holdToSpeedUpTooltip: string
+      holdToSpeedUpTooltip: string,
+      blockYoutubeLive: string,
+      blockYoutubeLiveTooltip: string
     },
     editor: {
       header: string,

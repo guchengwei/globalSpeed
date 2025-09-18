@@ -214,7 +214,9 @@
       "qrCodeTop": "Scansiona per utilizzare su...",
       "qrCodeBottom": "Edge per dispositivi mobili",
       "holdToSpeedUpTooltip": "Tieni premuto sui video per accelerare temporaneamente.",
-      "holdToSpeedUp": "Tieni premuto per accelerare"
+      "holdToSpeedUp": "Tieni premuto per accelerare",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "Modifica Scorciatoie",

@@ -213,7 +213,9 @@
       "qrCodeTop": "Escaneie para usar no...",
       "qrCodeBottom": "Edge para celular",
       "holdToSpeedUpTooltip": "Pressione e segure vídeos para acelerar temporariamente.",
-      "holdToSpeedUp": "Pressione e segure para acelerar"
+      "holdToSpeedUp": "Pressione e segure para acelerar",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "Editor de Atalhos",

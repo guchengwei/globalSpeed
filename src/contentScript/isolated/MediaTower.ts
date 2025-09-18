@@ -17,6 +17,7 @@ export class MediaTower {
   observer: IntersectionObserver
   trackFps = true 
   previousTimeUpdate: TimeUpdateInfo
+  blockYoutubeLiveSpeed = true
 
   constructor() {
     this.processDoc(window)
@@ -244,29 +245,19 @@ export class MediaTower {
     if (!speed) return
     speed = conformSpeed(speed)
     this.media.forEach(media => {
-      if (IS_YOUTUBE && media instanceof HTMLVideoElement) {
-        const shouldBlock = shouldBlockSpeedForYoutube(media)
-        if (shouldBlock) {
-          if (!media.hasAttribute("yss-skip")) {
-            media.setAttribute("yss-skip", "")
-            resetYoutubeRate(media)
+      if (IS_YOUTUBE && media instanceof HTMLVideoElement && this.blockYoutubeLiveSpeed) {
+        const shouldReset = shouldBlockSpeedForYoutube(media)
+        if (shouldReset) {
+          media.removeAttribute("yss-skip")
+          if (Math.abs(media.playbackRate - 1) > 0.001 || Math.abs(media.defaultPlaybackRate - 1) > 0.001) {
+            applyMediaEvent(media, {type: "PLAYBACK_RATE", value: 1, freePitch: false})
           }
           return
         }
-        media.removeAttribute("yss-skip")
       }
       applyMediaEvent(media, {type: "PLAYBACK_RATE", value: speed, freePitch})
     })
   }
-}
-
-function resetYoutubeRate(video: HTMLVideoElement) {
-  try {
-    if (Math.abs(video.playbackRate - 1) > 0.001) video.playbackRate = 1
-  } catch (err) {}
-  try {
-    if (Math.abs(video.defaultPlaybackRate - 1) > 0.001) video.defaultPlaybackRate = 1
-  } catch (err) {}
 }
 
 type TimeUpdateInfo = {

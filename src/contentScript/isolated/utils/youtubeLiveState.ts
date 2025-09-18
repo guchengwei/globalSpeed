@@ -19,31 +19,7 @@ type PlaybackMetrics = {
 
 export function shouldBlockSpeedForYoutube(video: HTMLVideoElement): boolean {
   const player = getYoutubePlayer();
-  if (!isLiveContent(player, video)) {
-    return false;
-  }
-
-  const metrics = getPlaybackMetrics(player, video);
-
-  if (metrics.hasDvr === false) {
-    return true;
-  }
-
-  if (
-    metrics.liveEdge == null ||
-    metrics.currentTime == null ||
-    !Number.isFinite(metrics.liveEdge) ||
-    !Number.isFinite(metrics.currentTime)
-  ) {
-    return true;
-  }
-
-  const delta = metrics.liveEdge - metrics.currentTime;
-  if (Number.isNaN(delta)) {
-    return true;
-  }
-
-  return delta <= LIVE_EDGE_THRESHOLD_SECONDS;
+  return isLiveContent(player, video);
 }
 
 function getYoutubePlayer(): YoutubePlayer | undefined {
@@ -245,8 +221,11 @@ function readDomIndicators(): boolean | undefined {
   }
 
   const liveBadge = document.querySelector(".ytp-live-badge");
-  if (liveBadge) {
-    return true;
+  if (liveBadge instanceof HTMLElement) {
+    const display = window.getComputedStyle(liveBadge).display;
+    if (display && display.toLowerCase() !== "none") {
+      return true;
+    }
   }
 
   return undefined;

@@ -1,8 +1,8 @@
 {
   ":appName": "Global Speed",
   ":appDesc": "Universal speed control for video and audio.",
-  "_scale": 1.0,
-  "_lang": "en", 
+  "_scale": 1,
+  "_lang": "en",
   "audio": {
     "captureTab": "Capture",
     "releaseTab": "Release",
@@ -31,28 +31,22 @@
     "reset": "Reset",
     "duplicate": "Duplicate",
     "delete": "Delete",
-
     "pinTooltip": "Pin if you want the current tab to have it's own context (speed, filters, etc).",
     "mergeBoth": "Merge both",
     "min": "Min",
     "max": "Max",
-    
     "on": "On",
     "off": "Off",
     "toggle": "Toggle",
-
     "element": "Element",
     "backdrop": "Backdrop",
     "both": "Both",
-    
     "query": "Query",
     "queryTooltip": "CSS selector used to find elements to filter. For example, 'video, img' will select both videos and images. For advanced usage, view documentation online about CSS selectors.",
-    
     "intoPane": "Into pane",
     "warning": "Warning",
     "filters": "Filters",
     "transforms": "Transforms",
-
     "blockEvents": "Block events",
     "blockEventsTooltip": "Will try to block event propagation and default behaviors.",
     "color": "Color",
@@ -72,7 +66,6 @@
     "shrink": "Shrink",
     "implode": "Implode",
     "rotate": "Rotate",
-
     "rows": "Rows",
     "replaceWith": "Replace $1 with?",
     "invalidNumber": "Invalid number",
@@ -188,7 +181,6 @@
       "ghostModeTooltip": "Try to block website from changing speed. Disabled by default because it might break some websites.",
       "pinByDefault": "Pin by default",
       "pinByDefaultTooltip": "New tabs will automatically be pinned.",
-
       "initialState": "Initial state",
       "previousTab": "Previous tab's context.",
       "globalContext": "Global context",
@@ -200,10 +192,8 @@
       "keyboardInputTooltip": "Consider switching to Virtual input mode if using a virtual keyboard or a non-QWERTY layout keyboard. This only applies to future shortcut changes and existing shortcuts won't be affected.",
       "qwerty": "QWERTY layout",
       "virtual": "Virtual",
-
       "grantPermission": "Grant permission",
       "grantPermissionTooltip": "To enable full functionality, including embed video support, this permission must be enabled. For limited functionality, you can enable on a site-by-site basis by right clicking the toolbar icon.",
-
       "speedSlider": "Speed slider",
       "textSize": "Text size",
       "speedPresets": "Speed presets",
@@ -226,7 +216,9 @@
       "qrCodeTop": "Scan to use on...",
       "qrCodeBottom": "Edge for Mobile",
       "holdToSpeedUp": "Press and hold to accelerate",
-      "holdToSpeedUpTooltip": "Press and hold videos to temporarily speed up."
+      "holdToSpeedUpTooltip": "Press and hold videos to temporarily speed up.",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "Shortcut Editor",

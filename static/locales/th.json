@@ -214,7 +214,9 @@
       "qrCodeTop": "สแกนเพื่อใช้งานบน...",
       "qrCodeBottom": "Edge สำหรับมือถือ",
       "holdToSpeedUpTooltip": "กดค้างที่วิดีโอเพื่อเพิ่มความเร็วชั่วคราว",
-      "holdToSpeedUp": "กดค้างเพื่อเร่งความเร็ว"
+      "holdToSpeedUp": "กดค้างเพื่อเร่งความเร็ว",
+      "blockYoutubeLive": "Block speed on YouTube live",
+      "blockYoutubeLiveTooltip": "Stop Global Speed from changing playback rate on detected YouTube live streams."
     },
     "editor": {
       "header": "ตัวแก้ไขคีย์ลัด",
