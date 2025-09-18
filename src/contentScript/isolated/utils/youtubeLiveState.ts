@@ -17,7 +17,7 @@ type PlaybackMetrics = {
   hasDvr?: boolean,
 };
 
-export function shouldBlockSpeedForYoutube(video: HTMLVideoElement): boolean {
+export function shouldEnforceNormalSpeedOnYoutubeLive(video: HTMLVideoElement): boolean {
   const player = getYoutubePlayer();
   return isLiveContent(player, video);
 }

@@ -5,7 +5,7 @@ import { generateScopeState } from "./utils/genMediaInfo";
 import { IS_YOUTUBE } from "./utils/isWebsite";
 import debounce from "lodash.debounce";
 import { getShadow } from "src/utils/nativeUtils";
-import { shouldBlockSpeedForYoutube } from "./utils/youtubeLiveState";
+import { shouldEnforceNormalSpeedOnYoutubeLive } from "./utils/youtubeLiveState";
 
 
 export class MediaTower {
@@ -246,7 +246,7 @@ export class MediaTower {
     speed = conformSpeed(speed)
     this.media.forEach(media => {
       if (IS_YOUTUBE && media instanceof HTMLVideoElement && this.enforceNormalSpeedOnYoutubeLive) {
-        const shouldReset = shouldBlockSpeedForYoutube(media)
+        const shouldReset = shouldEnforceNormalSpeedOnYoutubeLive(media)
         if (shouldReset) {
           media.removeAttribute("yss-skip")
           if (Math.abs(media.playbackRate - 1) > 0.001 || Math.abs(media.defaultPlaybackRate - 1) > 0.001) {
