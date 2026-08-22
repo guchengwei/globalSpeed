@@ -33,3 +33,14 @@ Universal speed control for video and audio.
 1. Load the unpacked folder
    1. Chrome: open extensions page, enable dev mode, load unpacked.
    1. Edge: open extensions page, load unpacked.
+
+## Releasing
+
+1. Push a tag to cut a release: `git tag vX.Y.Z && git push origin vX.Y.Z`
+2. CI ([`.github/workflows/release.yml`](.github/workflows/release.yml)) builds the Chromium zip,
+   Firefox zip, and AMO source zip, gates on `web-ext lint`, then attaches all three to a
+   **draft** GitHub Release.
+3. Review the draft's artifacts, then publish the release.
+4. Firefox: a human uploads `global-speed-firefox.zip` plus `source.zip` to
+   [AMO](https://addons.mozilla.org/developers/) for the listed submission.
+5. To dry-run the pipeline on a branch without tagging, trigger **Release** from the Actions tab.
