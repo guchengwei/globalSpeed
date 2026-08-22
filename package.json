@@ -14,15 +14,13 @@
 		"notFirefox/background/capture"
 	],
 	"scripts": {
-		"common": "node tools/viteBuild.js && node tools/localeTools/index.cjs build && find build -name '.DS_Store' -type f -delete",
-		"commonFf": "FIREFOX=true node tools/viteBuild.js && FIREFOX=true node tools/localeTools/index.cjs build && find buildFf -name '.DS_Store' -type f -delete",
+		"common": "node tools/viteBuild.js && find build -name '.DS_Store' -type f -delete",
+		"commonFf": "FIREFOX=true node tools/viteBuild.js && find buildFf -name '.DS_Store' -type f -delete",
 		"dev": "   export NODE_ENV=development && npm run common",
 		"devFf": " export NODE_ENV=development && npm run commonFf",
 		"prod": "  export NODE_ENV=production && npm run common   && cd build/unpacked   && zip -r '../global-speed-chromium.zip' .",
 		"prodFf": "export NODE_ENV=production && npm run commonFf && cd buildFf/unpacked && zip -r '../global-speed-firefox.zip' .",
 		"prodFff": "npm run prodFf && rm -rf zed && mkdir -p zed/unpacked && cp -r src static staticCh staticFf tools package-lock.json package.json tsconfig.json vite.config.js zed/unpacked && cp firefox-build.md zed/unpacked/README.md && (cd zed/unpacked && zip -r ../packed.zip .) && mv zed/packed.zip buildFf/source.zip && rm -rf zed",
-		"gsm": "node tools/localeTools/index.cjs types",
-		"locale": "node tools/localeTools/index.cjs",
 		"release": "node tools/release.js",
 		"lint": "tsc --noEmit",
 		"format": "prettier --check '**/*.{js,ts,tsx,json,css}'",
