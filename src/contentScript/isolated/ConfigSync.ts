@@ -9,6 +9,7 @@ import { compareHotkeys, extractHotkey, FullHotkey, Hotkey } from "../../utils/k
 import { SubscribeView } from "../../utils/state"
 import { FxSync } from "./FxSync"
 import { Circle } from "./utils/Circle"
+import { setKeepOriginalSpeedLive } from "./utils/exemption"
 
 const ghostModeStatic = [
 	".qq.com",
@@ -88,6 +89,9 @@ export class ConfigSync {
 		100,
 		150,
 	)
+	keepOriginalSpeedClient = new SubscribeView({ keepOriginalSpeedLive: true }, gvar.tabInfo.tabId, true, () => {
+		this.handleKeepOriginalSpeedChange()
+	})
 	ignoreList = new Set<string>()
 	init = () => {
 		gvar.os.eListen.keyDownCbs.add(this.handleKeyDown, this.ac.signal)
@@ -107,6 +111,8 @@ export class ConfigSync {
 		delete this.client
 		this.speedClient?.release()
 		delete this.speedClient
+		this.keepOriginalSpeedClient?.release()
+		delete this.keepOriginalSpeedClient
 		this.fxSync?.release()
 		delete this.fxSync
 	}
@@ -233,6 +239,9 @@ export class ConfigSync {
 			delete gvar.os.speedSync.latest
 			gvar.os.speedSync.update()
 		}
+	}
+	handleKeepOriginalSpeedChange = () => {
+		setKeepOriginalSpeedLive(!!this.keepOriginalSpeedClient.view?.keepOriginalSpeedLive)
 	}
 	sendGhostOn = () => gvar.os.stratumServer.send({ type: "GHOST" })
 	sendGhostOff = () => gvar.os.stratumServer.send({ type: "GHOST", off: true })

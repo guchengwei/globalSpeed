@@ -239,6 +239,8 @@
 			"showIndicatorTooltip": "Indikator adalah umpan balik visual saat menggunakan pintasan",
 			"ghostMode": "Mode hantu",
 			"ghostModeTooltip": "Mencegah situs web mendeteksi perubahan kecepatan pemutaran. Saat diaktifkan, ini berlaku untuk semua situs web secara default. Ini mungkin menyebabkan masalah pada beberapa situs. Gunakan ikon roda gigi untuk membatasinya ke situs-situs tertentu.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
 			"localFiles": "Aktifkan untuk file lokal",
 			"localFilesTooltip": "Memungkinkan ekstensi bekerja pada file lokal yang dibuka di browser, seperti file video di perangkat Anda. Mengeklik akan membuka halaman ekstensi browser, tempat akses file dapat diizinkan.",
 			"incognito": "Aktifkan di mode Samaran",

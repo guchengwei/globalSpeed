@@ -241,6 +241,8 @@
 			"showIndicatorTooltip": "Gösterge, kısayollar kullanılırken görsel geri bildirimdir",
 			"ghostMode": "Hayalet modu",
 			"ghostModeTooltip": "Web sitelerinin oynatma hızı değişikliklerini algılamasını engeller. Etkinleştirildiğinde, varsayılan olarak tüm web siteleri için geçerlidir. Bazı sitelerde sorunlara neden olabilir. Belirli sitelerle sınırlandırmak için dişli simgesini kullanın.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
 			"localFiles": "Yerel dosyalar için etkinleştir",
 			"localFilesTooltip": "Uzantının tarayıcıda açılan yerel dosyalarda, örneğin cihazınızdaki video dosyalarında çalışmasını sağlar. Tıkladığınızda, dosya erişimine izin verebileceğiniz tarayıcı uzantı sayfası açılır.",
 			"incognito": "Gizli modda etkinleştir",

@@ -56,6 +56,7 @@ export function SectionFlags(props: {}) {
 		initialContext: true,
 		ghostMode: true,
 		ghostModeUrlCondition: true,
+		keepOriginalSpeedLive: true,
 		hideMediaView: true,
 		freePitch: true,
 		speedSlider: true,
@@ -322,6 +323,21 @@ export function SectionFlags(props: {}) {
 							{!view.ghostMode ? null : <GearIcon className="text-foreground" onClick={(e) => setShowGhostModal(true)} />}
 						</div>
 					</FloatingFieldValue>
+				</OptionField>
+
+				{/* Keep Original Speed: live streams */}
+				<OptionField>
+					<OptionFieldLabel>
+						<span>{gvar.gsm.options.flags.keepOriginalSpeedLive}</span>
+						<RegularTooltip title={gvar.gsm.options.flags.keepOriginalSpeedLiveTooltip} align="right" />
+					</OptionFieldLabel>
+					<Toggle
+						aria-label={gvar.gsm.options.flags.keepOriginalSpeedLive}
+						value={!!view.keepOriginalSpeedLive}
+						onChange={(e) => {
+							setView({ keepOriginalSpeedLive: !view.keepOriginalSpeedLive })
+						}}
+					/>
 				</OptionField>
 
 				{/* Speed changes pitch */}
