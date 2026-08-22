@@ -381,7 +381,9 @@
 			"importTooltip": "Importar configuración"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opcional: Activar atajos de teclado en este sitio web"
+			"enableShortcutsMessage": "Opcional: Activar atajos de teclado en este sitio web",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

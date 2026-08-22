@@ -383,7 +383,9 @@
 			"importTooltip": "导入设置"
 		},
 		"popup": {
-			"enableShortcutsMessage": "可选：在此网站启用键盘快捷键"
+			"enableShortcutsMessage": "可选：在此网站启用键盘快捷键",
+			"keepOriginalSpeedBadge": "原速保持",
+			"explicitOverrideBadge": "已手动调速"
 		}
 	},
 	"pageDraw": {

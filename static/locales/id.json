@@ -381,7 +381,9 @@
 			"importTooltip": "Impor pengaturan"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opsional: Aktifkan pintasan keyboard di situs web ini"
+			"enableShortcutsMessage": "Opsional: Aktifkan pintasan keyboard di situs web ini",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

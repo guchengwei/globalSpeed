@@ -382,7 +382,9 @@
 			"importTooltip": "Nhập cài đặt"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Tùy chọn: Bật phím tắt trên trang web này"
+			"enableShortcutsMessage": "Tùy chọn: Bật phím tắt trên trang web này",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

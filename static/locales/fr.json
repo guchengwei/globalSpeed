@@ -382,7 +382,9 @@
 			"importTooltip": "Importer les paramètres"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Optionnel : activer les raccourcis clavier sur ce site"
+			"enableShortcutsMessage": "Optionnel : activer les raccourcis clavier sur ce site",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

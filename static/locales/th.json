@@ -381,7 +381,9 @@
 			"importTooltip": "นำเข้าการตั้งค่า"
 		},
 		"popup": {
-			"enableShortcutsMessage": "ไม่บังคับ: เปิดใช้คีย์ลัดบนเว็บไซต์นี้"
+			"enableShortcutsMessage": "ไม่บังคับ: เปิดใช้คีย์ลัดบนเว็บไซต์นี้",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

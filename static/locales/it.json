@@ -382,7 +382,9 @@
 			"importTooltip": "Importa impostazioni"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Facoltativo: abilita le scorciatoie da tastiera su questo sito"
+			"enableShortcutsMessage": "Facoltativo: abilita le scorciatoie da tastiera su questo sito",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

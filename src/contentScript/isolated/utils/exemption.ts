@@ -130,11 +130,24 @@ export function markExplicitOverride() {
 	explicitOverride = true
 }
 
-export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
-	// Independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is memoized and keyword matching is last (regex work over the title sources).
-	const exempt =
+// Pure per-element classification: independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media.
+// Ordered cheapest-first; the DOM query is memoized and keyword matching is last (regex work over the title sources).
+// Deliberately side-effect-free so snapshot publishing can read it without disturbing edge/reset bookkeeping.
+function classifyExempt(elem: HTMLMediaElement): boolean {
+	return (
 		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
 		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || titleMatchesMusicKeyword()))
+	)
+}
+
+// Published Keep Original Speed state for scope snapshots (popup badge). Reading never mutates classification or override bookkeeping.
+export function getKosMediaState(elem: HTMLMediaElement): { exempt: boolean; overridden: boolean } {
+	const exempt = classifyExempt(elem)
+	return { exempt, overridden: exempt && explicitOverride }
+}
+
+export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
+	const exempt = classifyExempt(elem)
 
 	if ((exemptElements.get(elem) ?? false) !== exempt) {
 		exemptElements.set(elem, exempt)

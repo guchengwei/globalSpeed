@@ -47,6 +47,17 @@ export function MediaView(props: { info: FlatMediaInfo; pinned: boolean }) {
 					>
 						{parts.join(info.shadowMode == null ? " - " : ` • `)}
 					</span>
+					{info.kosExempt && (
+						<span
+							className={cn(
+								"ml-1.25 shrink-0 self-center rounded-md px-1 py-px text-[0.65rem] leading-tight",
+								info.kosOverridden ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground",
+							)}
+							title={info.kosOverridden ? gvar.gsm.options.popup.explicitOverrideBadge : gvar.gsm.options.popup.keepOriginalSpeedBadge}
+						>
+							{info.kosOverridden ? gvar.gsm.options.popup.explicitOverrideBadge : gvar.gsm.options.popup.keepOriginalSpeedBadge}
+						</span>
+					)}
 					{differentTab && (
 						<Tooltip title={gvar.gsm.token.jumpToTab}>
 							<Button

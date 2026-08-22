@@ -382,7 +382,9 @@
 			"importTooltip": "Import tetapan"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Pilihan: Aktifkan pintasan papan kekunci di laman web ini"
+			"enableShortcutsMessage": "Pilihan: Aktifkan pintasan papan kekunci di laman web ini",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

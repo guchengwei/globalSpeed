@@ -729,6 +729,10 @@
 		},
 		"popup": {
 			"enableShortcutsMessage": "Optional: Enable keyboard shortcuts on this website",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override",
+			"!keepOriginalSpeedBadge": "Popup badge while the current media is Exempt Media (Keep Original Speed)",
+			"!explicitOverrideBadge": "Popup badge while an Explicit Override pierces the Exempt Media skip",
 			"!enableShortcutsMessage": "Optional prompt in the extension popup for enabling keyboard shortcuts on the current website"
 		}
 	},

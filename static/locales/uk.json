@@ -382,7 +382,9 @@
 			"importTooltip": "Імпортувати налаштування"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Необов’язково: Увімкнути гарячі клавіші на цьому сайті"
+			"enableShortcutsMessage": "Необов’язково: Увімкнути гарячі клавіші на цьому сайті",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

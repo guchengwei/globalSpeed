@@ -381,7 +381,9 @@
 			"importTooltip": "Импорт настроек"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Необязательно: Включить горячие клавиши на этом сайте"
+			"enableShortcutsMessage": "Необязательно: Включить горячие клавиши на этом сайте",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {
