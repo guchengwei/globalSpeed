@@ -5,6 +5,7 @@ import { getShadow } from "@/utils/nativeUtils"
 import { conformSpeed } from "../../utils/configUtils"
 import { assertType, between, randomId } from "../../utils/helper"
 import { applyMediaEvent, MediaEvent, resetRateLimit } from "./utils/applyMediaEvent"
+import { shouldSkipEnforcement } from "./utils/exemption"
 import { generateScopeState } from "./utils/genMediaInfo"
 
 const EVENTS_LAST_PLAYED = new Set(["pause", "playing", "timeupdate"])
@@ -230,6 +231,7 @@ export class MediaTower {
 		if (!speed) return
 		speed = conformSpeed(speed)
 		this.media.forEach((media) => {
+			if (shouldSkipEnforcement(media)) return
 			applyMediaEvent(media, { type: "PLAYBACK_RATE", value: speed, freePitch })
 		})
 	}
