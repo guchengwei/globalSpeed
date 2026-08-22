@@ -240,6 +240,8 @@
 			"showIndicatorTooltip": "Der Indikator ist visuelles Feedback beim Verwenden von Tastenkombinationen",
 			"ghostMode": "Geistermodus",
 			"ghostModeTooltip": "Verhindert, dass Websites Änderungen der Wiedergabegeschwindigkeit erkennen. Wenn aktiviert, gilt dies standardmäßig für alle Websites. Dies kann auf einigen Websites zu Problemen führen. Verwende das Zahnradsymbol, um es auf bestimmte Websites zu beschränken.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
 			"localFiles": "Für lokale Dateien aktivieren",
 			"localFilesTooltip": "Ermöglicht der Erweiterung, mit lokalen Dateien zu arbeiten, die im Browser geöffnet sind, etwa Videodateien auf deinem Gerät. Ein Klick öffnet die Erweiterungsseite des Browsers, auf der du den Dateizugriff erlauben kannst.",
 			"incognito": "Im Inkognitomodus aktivieren",

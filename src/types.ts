@@ -71,6 +71,7 @@ export type State = {
 	websitesAddedToUrlConditionsExclusion?: string[]
 	ghostMode?: boolean
 	ghostModeUrlCondition?: URLCondition
+	keepOriginalSpeedLive?: boolean
 	rules?: URLRule[]
 	indicatorInit?: IndicatorInit
 	freePitch?: boolean
