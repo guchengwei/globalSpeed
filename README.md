@@ -1,8 +1,14 @@
-# Global Speed
+# GlobalSpeed CE
 
 Universal speed control for video and audio.
 
-## Install the [Edge](https://microsoftedge.microsoft.com/addons/detail/mjhlabbcmjflkpjknnicihkfnmbdfced), [Firefox](https://addons.mozilla.org/firefox/addon/global-speed/), or [Chrome](https://chrome.google.com/webstore/detail/global-speed-youtube-netf/jpbjcnkcffbooppibceonlgknpkniiff) extension.
+## About this fork
+
+GlobalSpeed CE is an independently maintained, separately published fork of [polywock/globalSpeed](https://github.com/polywock/globalSpeed). It carries the same core feature set plus ongoing fixes and additions (such as continued Firefox support), published under its own add-on identity as **GlobalSpeed CE**. Because the extension uses its own add-on ID, existing **Global Speed** installations are treated as a different add-on: settings and storage do **not** migrate — configure the extension after installing CE.
+
+## Install
+
+Grab a build from the [GitHub releases](https://github.com/guchengwei/globalSpeed/releases), or install the signed Firefox add-on from [Mozilla Add-ons (AMO)](https://addons.mozilla.org/) once listed.
 
 ### Speed Control
 

@@ -187,7 +187,7 @@ function ExportImport(props: {}) {
 export function downloadState(state: State) {
 	const a = document.createElement("a")
 	a.setAttribute("href", window.URL.createObjectURL(new Blob([JSON.stringify(state)], { type: "application/json" })))
-	a.setAttribute("download", `Global Speed - ${new Date().toDateString()}.json`)
+	a.setAttribute("download", `GlobalSpeed CE - ${new Date().toDateString()}.json`)
 	a.setAttribute("style", "position: fixed; left: -1000px; top: 1000px; opacity: 0;")
 	document.documentElement.append(a)
 	a.click()

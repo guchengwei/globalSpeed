@@ -38,7 +38,7 @@ export function CommandWarning(props: Props) {
 		<WarningBanner
 			action={{
 				label: gvar.gsm.token.openPage,
-				onClick: () => requestCreateTab(`chrome://extensions/shortcuts#:~:text=${encodeURIComponent("Global Speed")}`),
+				onClick: () => requestCreateTab(`chrome://extensions/shortcuts#:~:text=${encodeURIComponent("GlobalSpeed CE")}`),
 			}}
 		>
 			{gvar.gsm.warnings.unusedGlobal}

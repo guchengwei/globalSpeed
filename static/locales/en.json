@@ -1,6 +1,6 @@
 {
-	":appName": "Global Speed - Video Speed Control",
-	"!:appName": "Chrome Web Store listing title; keep 'Global Speed' untranslated",
+	":appName": "GlobalSpeed CE - Video Speed Control",
+	"!:appName": "Chrome Web Store listing title; keep 'GlobalSpeed CE' untranslated",
 	":appDesc": "Universal speed control for video and audio.",
 	"!:appDesc": "Chrome Web Store listing description; keep under ~132 chars",
 	"_scale": 1,
