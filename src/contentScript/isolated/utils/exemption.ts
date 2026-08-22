@@ -1,4 +1,4 @@
-import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_PRESETS } from "@/defaults"
+import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_KEYWORDS, DEFAULT_MUSIC_PRESETS } from "@/defaults"
 import { KosPresetEntry } from "@/types"
 import { applyMediaEvent } from "./applyMediaEvent"
 
@@ -12,6 +12,10 @@ let musicChannelEnabled = false
 // Enabled DOMAIN presets pushed from state; an undefined slice (feature never touched) resolves to the built-in seed.
 let liveDomainPresets: KosPresetEntry[] = []
 let musicDomainPresets: KosPresetEntry[] = []
+
+// Enabled TITLE_KEYWORD presets pushed from state, compiled once per preset-set change so every classification pass only re-runs the matching itself.
+type KeywordMatcher = { regex?: RegExp; substring?: string }
+let musicKeywordMatchers: KeywordMatcher[] = []
 
 // Watch-page media category reported through the MAIN↔isolated bridge; only "Music" classifies as Music Content.
 let mediaCategory: string | null = null
@@ -57,12 +61,65 @@ export function setKeepOriginalSpeedMusic(enabled: boolean) {
 }
 
 export function setLivePresets(presets?: KosPresetEntry[]) {
-	// Filter to active DOMAIN entries once here so the per-element pass only scans plain strings. TITLE_KEYWORD entries are inert until their matcher lands (#7).
+	// Filter to active DOMAIN entries once here so the per-element pass only scans plain strings. (The Live channel has no keyword matcher; TITLE_KEYWORD entries in its slice are inert.)
 	liveDomainPresets = (presets ?? DEFAULT_LIVE_PRESETS).filter((entry) => entry.enabled && entry.type === "DOMAIN")
 }
 
 export function setMusicPresets(presets?: KosPresetEntry[]) {
 	musicDomainPresets = (presets ?? DEFAULT_MUSIC_PRESETS).filter((entry) => entry.enabled && entry.type === "DOMAIN")
+}
+
+export function setMusicKeywords(keywords?: KosPresetEntry[]) {
+	// Same undefined→seed-fallback as the DOMAIN preset slices. Compilation happens here, once per preset-set change, never per pass.
+	musicKeywordMatchers = (keywords ?? DEFAULT_MUSIC_KEYWORDS)
+		.filter((entry) => entry.enabled && entry.type === "TITLE_KEYWORD")
+		.map(compileKeywordMatcher)
+		.filter((matcher) => matcher.regex || matcher.substring)
+}
+
+// ASCII keywords match on word boundaries (so "playlist" never hits "mixed martial arts"); non-ASCII (CJK) keywords match by substring.
+// Values are lowercased at compile time and the haystacks per pass, keeping the compiled patterns case-normalized without a per-test toLowerCase.
+function compileKeywordMatcher(entry: KosPresetEntry): KeywordMatcher {
+	const value = (entry.value || "").trim().toLowerCase()
+	if (!value) return {}
+	if (/[^\x00-\x7F]/.test(value)) return { substring: value }
+	return { regex: new RegExp(`\\b${escapeRegExp(value)}\\b`) }
+}
+
+function escapeRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+// Title sources consulted for TITLE_KEYWORD matching: the frame's document.title plus the mediaSession metadata title when the page publishes one
+// (same source genMediaInfo.ts reads for MediaScope displayTitle; read defensively since support varies).
+const titleSources: string[] = ["", ""]
+let docTitleRaw: string | null = null
+let mediaTitleRaw: string | null = null
+
+function currentTitleSources(): string[] {
+	const docTitle = document.title ?? ""
+	let mediaTitle = ""
+	try {
+		mediaTitle = (navigator as any).mediaSession?.metadata?.title || ""
+	} catch {}
+	// Lowercase each source once per pass (only when its raw value actually changed) instead of once per keyword test.
+	if (docTitle !== docTitleRaw) {
+		docTitleRaw = docTitle
+		titleSources[0] = docTitle.toLowerCase()
+	}
+	if (mediaTitle !== mediaTitleRaw) {
+		mediaTitleRaw = mediaTitle
+		titleSources[1] = mediaTitle.toLowerCase()
+	}
+	return titleSources
+}
+
+function titleMatchesMusicKeyword(): boolean {
+	if (!musicKeywordMatchers.length) return false
+	const sources = currentTitleSources()
+	return musicKeywordMatchers.some((matcher) =>
+		matcher.regex ? sources.some((source) => matcher.regex!.test(source)) : sources.some((source) => source.includes(matcher.substring!)),
+	)
 }
 
 export function setMusicCategory(category: string | null) {
@@ -74,10 +131,10 @@ export function markExplicitOverride() {
 }
 
 export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
-	// Two independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is last and memoized.
+	// Independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is memoized and keyword matching is last (regex work over the title sources).
 	const exempt =
 		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
-		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music"))
+		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || titleMatchesMusicKeyword()))
 
 	if ((exemptElements.get(elem) ?? false) !== exempt) {
 		exemptElements.set(elem, exempt)

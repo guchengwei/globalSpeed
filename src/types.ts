@@ -75,6 +75,7 @@ export type State = {
 	keepOriginalSpeedLivePresets?: KosPresets
 	keepOriginalSpeedMusic?: boolean
 	keepOriginalSpeedMusicPresets?: KosPresets
+	keepOriginalSpeedMusicKeywords?: KosPresets
 	rules?: URLRule[]
 	indicatorInit?: IndicatorInit
 	freePitch?: boolean
