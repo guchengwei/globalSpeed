@@ -107,7 +107,7 @@ jobs:
           version=$(node -p "require('./staticCh/manifest.json').version")
           expected_tag="v${version}"
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            echo "Dry run (workflow_dispatch): would create DRAFT release '${expected_tag}' titled 'Global Speed ${expected_tag}' with:"
+            echo "Dry run (workflow_dispatch): would create DRAFT release '${expected_tag}' titled 'GlobalSpeed CE ${expected_tag}' with:"
             ls -l "${artifacts[@]}"
             exit 0
           fi
@@ -117,5 +117,5 @@ jobs:
           fi
           gh release create "${tag}" "${artifacts[@]}" \
             --draft \
-            --title "Global Speed ${tag}" \
+            --title "GlobalSpeed CE ${tag}" \
             --generate-notes
