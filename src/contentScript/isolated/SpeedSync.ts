@@ -1,6 +1,7 @@
 import { gvar } from "@/globalVar"
 import { between } from "@/utils/helper"
 import { SubscribeView } from "@/utils/state"
+import { markExplicitOverride } from "./utils/exemption"
 
 export class SpeedSync {
 	intervalId: number
@@ -97,8 +98,11 @@ export class SpeedSync {
 		if (this.latest) {
 			let speed = this.latest.speed
 			if (this.holdToSpeed && this.pointerDownActive()) {
+				// Deliberate hold-to-speed pierces Exempt Media.
+				markExplicitOverride()
 				speed *= this.holdToSpeed
 			} else if (this.holdToSpeedForKeyboard && this.keyDownActive()) {
+				markExplicitOverride()
 				speed *= this.holdToSpeedForKeyboard
 			}
 
