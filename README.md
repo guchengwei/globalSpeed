@@ -48,6 +48,7 @@ Grab a build from the [GitHub releases](https://github.com/guchengwei/globalSpee
    **draft** GitHub Release.
 3. Review the draft's artifacts, then publish the release.
 4. Firefox: a human uploads `global-speed-firefox.zip` plus `source.zip` to
-   [AMO](https://addons.mozilla.org/developers/) for the listed submission.
+   [AMO](https://addons.mozilla.org/developers/) for the listed submission —
+   follow [`docs/release-checklist.md`](docs/release-checklist.md).
 5. To dry-run the pipeline on a branch without tagging, trigger **Release** from the Actions tab.
 6. If `static/locales/` changed, run `node tools/genLocales.mjs` and commit the regenerated `static/_locales`.
