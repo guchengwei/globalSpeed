@@ -467,6 +467,18 @@ export type Gsm = {
 			keepOriginalSpeedMusic: string
 			/** While enabled, music content plays at its native speed instead of the enforced speed. */
 			keepOriginalSpeedMusicTooltip: string
+			/** Edit presets */
+			kosEditPresets: string
+			/** Domains */
+			kosDomains: string
+			/** Title keywords */
+			kosTitleKeywords: string
+			/** Add a domain */
+			kosAddDomain: string
+			/** Add a keyword */
+			kosAddKeyword: string
+			/** Restore defaults */
+			kosRestoreDefaults: string
 			/** Enable for local files */
 			localFiles: string
 			/** Lets the extension work on local files opened in the browser, such as video files on your device. Clicking opens the browser extension page, where file access can be allowed. */
