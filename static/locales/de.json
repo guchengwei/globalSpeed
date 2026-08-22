@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Steuerung der Video-Geschwindigkeit",
+	":appName": "GlobalSpeed CE: Steuerung der Video-Geschwindigkeit",
 	":appDesc": "Universelle Geschwindigkeitssteuerung für Video und Audio.",
 	"_upperFirst": true,
 	"audio": {

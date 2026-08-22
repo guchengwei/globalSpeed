@@ -3,7 +3,7 @@
 	"version": "3.4.116",
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "{f4961478-ac79-4a18-87e9-d2fb8c0442c4}",
+			"id": "{6abd70e7-3878-4141-8391-384c83f0717f}",
 			"strict_min_version": "128.0",
 			"data_collection_permissions": {
 				"required": ["none"]

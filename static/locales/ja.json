@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: 動画速度制御",
+	":appName": "GlobalSpeed CE: 動画速度制御",
 	":appDesc": "すべてのウェブサイトで動画と音声の再生速度を制御します。",
 	"_shortcut_screenshot": true,
 	"audio": {

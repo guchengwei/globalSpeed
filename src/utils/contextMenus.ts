@@ -20,7 +20,7 @@ async function _syncContextMenus(keybinds?: Keybind[]) {
 
 	await create({
 		id: "parent",
-		title: "Global Speed",
+		title: "GlobalSpeed CE",
 		contexts: ["all"],
 		documentUrlPatterns: ["https://*/*", "http://*/*"],
 	})

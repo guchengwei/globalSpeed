@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: 동영상 속도 제어",
+	":appName": "GlobalSpeed CE: 동영상 속도 제어",
 	":appDesc": "모든 웹사이트에서 동영상와 오디오 재생 속도를 조절합니다.",
 	"_scale": 1.03,
 	"audio": {
