@@ -90,13 +90,69 @@ function escapeRegExp(value: string): string {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
-// Title sources consulted for TITLE_KEYWORD matching: the frame's document.title plus the mediaSession metadata title when the page publishes one
-// (same source genMediaInfo.ts reads for MediaScope displayTitle; read defensively since support varies).
-const titleSources: string[] = ["", ""]
+// Platform-provided tag signals for TITLE_KEYWORD matching (higher precision than title substrings): YouTube exposes uploader
+// tags in the watch-page <meta name="keywords"> content; Bilibili renders them as DOM tag links behind a couple of historical
+// markup shapes, tried in candidate order. Extraction is guarded by cheap hostname checks before any querySelector and memoized
+// with the same 1s-TTL pattern as the live badge above — never per element per tick. Anything missing or failing degrades
+// silently to an empty tag list (title-only matching); extraction never throws or logs.
+const KEYWORD_TAG_TTL_MS = 1000
+const BILIBILI_TAG_SELECTORS = [".tag-info .tag-link", ".video-tag-container .tag-link", "a.tag-link"]
+let tagsCheckedAt = 0
+let tagsRawKey: string | null = null
+let tagsJoined = ""
+
+// Whole-domain scope like the DOMAIN presets: the apex host or any deeper subdomain (www., m., …).
+function onPlayerHost(hostname: string): boolean {
+	return hostname === "youtube.com" || hostname.endsWith(".youtube.com") || hostname === "bilibili.com" || hostname.endsWith(".bilibili.com")
+}
+
+function extractPlatformTags(): string[] {
+	try {
+		const hostname = location.hostname
+		// Guard before any querySelector: tag extraction only makes sense on pages plausibly hosting these players.
+		if (!onPlayerHost(hostname)) return []
+		if (hostname === "youtube.com" || hostname.endsWith(".youtube.com")) {
+			const keywords = document.querySelector<HTMLMetaElement>('meta[name="keywords"]')?.content ?? ""
+			return keywords
+				.split(",")
+				.map((tag) => tag.trim())
+				.filter(Boolean)
+		}
+		if (hostname === "bilibili.com" || hostname.endsWith(".bilibili.com")) {
+			for (const selector of BILIBILI_TAG_SELECTORS) {
+				const tags = Array.from(document.querySelectorAll(selector))
+					.map((el) => el.textContent?.trim() || "")
+					.filter(Boolean)
+				if (tags.length) return tags
+			}
+		}
+	} catch {}
+	return []
+}
+
+// Returns the tag texts joined into one lowercased haystack, recomputed only when the raw set actually changed — so steady-state passes pay nothing beyond a timestamp compare.
+function currentTagSource(): string {
+	const now = Date.now()
+	if (now - tagsCheckedAt >= KEYWORD_TAG_TTL_MS) {
+		tagsCheckedAt = now
+		const tags = extractPlatformTags()
+		const rawKey = tags.join("\n")
+		if (rawKey !== tagsRawKey) {
+			tagsRawKey = rawKey
+			tagsJoined = tags.map((tag) => tag.toLowerCase()).join(", ")
+		}
+	}
+	return tagsJoined
+}
+
+// Match sources consulted for TITLE_KEYWORD matching: the frame's document.title, the mediaSession metadata title when the page
+// publishes one (same source genMediaInfo.ts reads for MediaScope displayTitle; read defensively since support varies), and the
+// platform tag signals joined into one slot. A hit from any single source classifies as Exempt Media.
+const matchSources: string[] = ["", "", ""]
 let docTitleRaw: string | null = null
 let mediaTitleRaw: string | null = null
 
-function currentTitleSources(): string[] {
+function currentMatchSources(): string[] {
 	const docTitle = document.title ?? ""
 	let mediaTitle = ""
 	try {
@@ -105,18 +161,19 @@ function currentTitleSources(): string[] {
 	// Lowercase each source once per pass (only when its raw value actually changed) instead of once per keyword test.
 	if (docTitle !== docTitleRaw) {
 		docTitleRaw = docTitle
-		titleSources[0] = docTitle.toLowerCase()
+		matchSources[0] = docTitle.toLowerCase()
 	}
 	if (mediaTitle !== mediaTitleRaw) {
 		mediaTitleRaw = mediaTitle
-		titleSources[1] = mediaTitle.toLowerCase()
+		matchSources[1] = mediaTitle.toLowerCase()
 	}
-	return titleSources
+	matchSources[2] = currentTagSource()
+	return matchSources
 }
 
-function titleMatchesMusicKeyword(): boolean {
+function matchesMusicKeyword(): boolean {
 	if (!musicKeywordMatchers.length) return false
-	const sources = currentTitleSources()
+	const sources = currentMatchSources()
 	return musicKeywordMatchers.some((matcher) =>
 		matcher.regex ? sources.some((source) => matcher.regex!.test(source)) : sources.some((source) => source.includes(matcher.substring!)),
 	)
@@ -131,10 +188,10 @@ export function markExplicitOverride() {
 }
 
 export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
-	// Independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is memoized and keyword matching is last (regex work over the title sources).
+	// Independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM queries are memoized and keyword matching is last (regex work over the title/tag sources).
 	const exempt =
 		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
-		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || titleMatchesMusicKeyword()))
+		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || matchesMusicKeyword()))
 
 	if ((exemptElements.get(elem) ?? false) !== exempt) {
 		exemptElements.set(elem, exempt)
