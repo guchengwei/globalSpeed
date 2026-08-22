@@ -717,6 +717,10 @@ export type Gsm = {
 		popup: {
 			/** Optional: Enable keyboard shortcuts on this website */
 			enableShortcutsMessage: string
+			/** Keep Original Speed */
+			keepOriginalSpeedBadge: string
+			/** Explicit Override */
+			explicitOverrideBadge: string
 		}
 	}
 	pageDraw: {

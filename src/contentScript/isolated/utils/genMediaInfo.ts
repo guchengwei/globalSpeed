@@ -1,5 +1,6 @@
 import { capitalize, isDipWindow, parseDomain, removeDomainFromTitle } from "@/utils/helper"
 import { TabInfo } from "../../../utils/browserUtils"
+import { getKosMediaState } from "./exemption"
 
 export function generateMediaState(elem: HTMLMediaElement): MediaInfo {
 	const rootNode = elem.getRootNode() as ShadowRoot | Document
@@ -12,6 +13,12 @@ export function generateMediaState(elem: HTMLMediaElement): MediaInfo {
 		marks: Object.keys(elem.gsMarks || {}),
 		playbackRate: elem.playbackRate,
 		lastPlayed: elem.gsLastPlayed,
+	}
+
+	const kos = getKosMediaState(elem)
+	if (kos.exempt) {
+		info.kosExempt = true
+		if (kos.overridden) info.kosOverridden = true
 	}
 
 	if (elem.duration === Infinity) {
@@ -128,6 +135,8 @@ export type MediaInfo = {
 	fps?: number
 	playbackRate: number
 	lastPlayed?: number
+	kosExempt?: boolean
+	kosOverridden?: boolean
 }
 
 export type FlatMediaInfo = MediaScope & MediaInfo

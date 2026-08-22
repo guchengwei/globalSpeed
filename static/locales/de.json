@@ -376,7 +376,9 @@
 			"importTooltip": "Einstellungen importieren"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Optional: Tastenkürzel auf dieser Website aktivieren"
+			"enableShortcutsMessage": "Optional: Tastenkürzel auf dieser Website aktivieren",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

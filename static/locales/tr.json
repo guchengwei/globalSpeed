@@ -377,7 +377,9 @@
 			"importTooltip": "Ayarları içe aktar"
 		},
 		"popup": {
-			"enableShortcutsMessage": "İsteğe bağlı: Bu web sitesinde klavye kısayollarını etkinleştirin"
+			"enableShortcutsMessage": "İsteğe bağlı: Bu web sitesinde klavye kısayollarını etkinleştirin",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

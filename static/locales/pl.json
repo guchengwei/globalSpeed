@@ -376,7 +376,9 @@
 			"importTooltip": "Importuj ustawienia"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opcjonalnie: Włącz skróty klawiszowe na tej stronie"
+			"enableShortcutsMessage": "Opcjonalnie: Włącz skróty klawiszowe na tej stronie",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

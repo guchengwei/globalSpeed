@@ -375,7 +375,9 @@
 			"importTooltip": "設定をインポート"
 		},
 		"popup": {
-			"enableShortcutsMessage": "オプション：このウェブサイトでキーボードショートカットを有効にします"
+			"enableShortcutsMessage": "オプション：このウェブサイトでキーボードショートカットを有効にします",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

@@ -376,7 +376,9 @@
 			"importTooltip": "설정 가져오기"
 		},
 		"popup": {
-			"enableShortcutsMessage": "선택 사항: 이 웹사이트에서 키보드 단축키를 활성화하세요"
+			"enableShortcutsMessage": "선택 사항: 이 웹사이트에서 키보드 단축키를 활성화하세요",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

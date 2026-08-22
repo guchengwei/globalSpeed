@@ -375,7 +375,9 @@
 			"importTooltip": "استيراد الإعدادات"
 		},
 		"popup": {
-			"enableShortcutsMessage": "اختياري: تمكين اختصارات لوحة المفاتيح على هذا الموقع"
+			"enableShortcutsMessage": "اختياري: تمكين اختصارات لوحة المفاتيح على هذا الموقع",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {
