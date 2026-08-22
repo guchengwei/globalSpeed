@@ -9,7 +9,7 @@ import { compareHotkeys, extractHotkey, FullHotkey, Hotkey } from "../../utils/k
 import { SubscribeView } from "../../utils/state"
 import { FxSync } from "./FxSync"
 import { Circle } from "./utils/Circle"
-import { setKeepOriginalSpeedLive } from "./utils/exemption"
+import { setKeepOriginalSpeedLive, setLivePresets } from "./utils/exemption"
 
 const ghostModeStatic = [
 	".qq.com",
@@ -89,7 +89,7 @@ export class ConfigSync {
 		100,
 		150,
 	)
-	keepOriginalSpeedClient = new SubscribeView({ keepOriginalSpeedLive: true }, gvar.tabInfo.tabId, true, () => {
+	keepOriginalSpeedClient = new SubscribeView({ keepOriginalSpeedLive: true, keepOriginalSpeedLivePresets: true }, gvar.tabInfo.tabId, true, () => {
 		this.handleKeepOriginalSpeedChange()
 	})
 	ignoreList = new Set<string>()
@@ -242,6 +242,8 @@ export class ConfigSync {
 	}
 	handleKeepOriginalSpeedChange = () => {
 		setKeepOriginalSpeedLive(!!this.keepOriginalSpeedClient.view?.keepOriginalSpeedLive)
+		// Undefined slice (feature never touched) lets the exemption module fall back to the built-in seed.
+		setLivePresets(this.keepOriginalSpeedClient.view?.keepOriginalSpeedLivePresets)
 	}
 	sendGhostOn = () => gvar.os.stratumServer.send({ type: "GHOST" })
 	sendGhostOff = () => gvar.os.stratumServer.send({ type: "GHOST", off: true })

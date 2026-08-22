@@ -72,6 +72,7 @@ export type State = {
 	ghostMode?: boolean
 	ghostModeUrlCondition?: URLCondition
 	keepOriginalSpeedLive?: boolean
+	keepOriginalSpeedLivePresets?: KosPresets
 	rules?: URLRule[]
 	indicatorInit?: IndicatorInit
 	freePitch?: boolean
@@ -439,6 +440,17 @@ export type URLCondition = {
 	allowParts: URLConditionPart[]
 	block?: boolean
 }
+
+// Keep Original Speed presets (ADR-0002): platform knowledge as editable pure-data bundles, not code branches.
+export type KosPresetEntry = {
+	/** How `value` is evaluated: DOMAIN against the frame hostname, TITLE_KEYWORD against the media title. */
+	type: "DOMAIN" | "TITLE_KEYWORD"
+	value: string
+	enabled: boolean
+}
+
+/** The preset entries of one detection channel (Live Stream, later Music Content). */
+export type KosPresets = KosPresetEntry[]
 
 export type MediaProbe = {
 	formatted?: string

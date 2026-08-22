@@ -1,4 +1,17 @@
-import { AnyDict, AudioFx, Context, CONTEXT_KEYS, Fx, IndicatorInit, Keybind, State, URLCondition, URLConditionPart, URLRule } from "../types"
+import {
+	AnyDict,
+	AudioFx,
+	Context,
+	CONTEXT_KEYS,
+	Fx,
+	IndicatorInit,
+	Keybind,
+	KosPresets,
+	State,
+	URLCondition,
+	URLConditionPart,
+	URLRule,
+} from "../types"
 import { chunkByPredicate, isMobile, randomId } from "../utils/helper"
 import { getDefaultMenuKeybinds, getDefaultPageKeybinds } from "./commands"
 import { filterInfos, FilterName } from "./filters"
@@ -40,6 +53,13 @@ export function generateUrlPart(origin: string): URLConditionPart {
 	}
 }
 
+// Built-in Live Stream channel DOMAIN presets. Twitch is deliberately absent: presets are whole-domain, so it would also exempt VODs.
+export const DEFAULT_LIVE_PRESETS: KosPresets = [
+	{ type: "DOMAIN", value: "live.bilibili.com", enabled: true },
+	{ type: "DOMAIN", value: "www.douyu.com", enabled: false },
+	{ type: "DOMAIN", value: "www.huya.com", enabled: false },
+]
+
 export function getDefaultState(): State {
 	let state = {
 		version: 15,
@@ -52,6 +72,7 @@ export function getDefaultState(): State {
 		keybindsUrlCondition: getDefaultKeybindsUrlConditions(),
 		hideMediaView: isMobile(),
 		holdToSpeed: isMobile() ? 2 : undefined,
+		keepOriginalSpeedLivePresets: DEFAULT_LIVE_PRESETS.map((entry) => ({ ...entry })),
 	} satisfies State
 
 	return state
