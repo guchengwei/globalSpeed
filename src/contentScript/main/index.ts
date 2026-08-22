@@ -172,6 +172,7 @@ class StratumClient {
 	#key = randomId()
 	#serverName = `GS_SERVER_${this.#key}`
 	#clientName = `GS_CLIENT_${this.#key}`
+	#reportedCategory?: string
 
 	constructor() {
 		this.#parasite.id = "GS_PARASITE"
@@ -179,6 +180,7 @@ class StratumClient {
 		document.documentElement.appendChild(this.#parasite)
 		this.#parasite.dispatchEvent(new CustomEvent("GS_INIT", { detail: this.#key }))
 		this.#parasite.remove()
+		this.reportMediaCategory()
 	}
 	handle = (e: CustomEvent) => {
 		native.stopImmediatePropagation.call(e)
@@ -205,6 +207,16 @@ class StratumClient {
 		native.appendChild.call(parent, this.#parasite)
 		native.dispatchEvent.call(this.#parasiteRoot, new native.CustomEvent(this.#serverName, { detail: native.JSON.stringify({ type: "WIGGLE" }) }))
 		native.elementRemove.call(this.#parasite)
+		this.reportMediaCategory()
+	}
+	// YouTube-only best effort: surfaces the watch page's media category (ytInitialPlayerResponse) to the isolated world. Reads once per distinct value at document_start and again on wiggle time (covers late page scripts and SPA navigations); try/catch keeps it silent everywhere else.
+	reportMediaCategory = () => {
+		try {
+			const category = (window as any).ytInitialPlayerResponse?.microformat?.playerMicroformatRenderer?.category
+			if (typeof category !== "string" || category === this.#reportedCategory) return
+			this.#reportedCategory = category
+			this.send({ type: "MEDIA_CATEGORY", value: category })
+		} catch (err) {}
 	}
 }
 

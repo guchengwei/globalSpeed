@@ -463,6 +463,10 @@ export type Gsm = {
 			keepOriginalSpeedLive: string
 			/** While enabled, live streams play at their native speed instead of the enforced speed. */
 			keepOriginalSpeedLiveTooltip: string
+			/** Keep original speed for music content */
+			keepOriginalSpeedMusic: string
+			/** While enabled, music content plays at its native speed instead of the enforced speed. */
+			keepOriginalSpeedMusicTooltip: string
 			/** Enable for local files */
 			localFiles: string
 			/** Lets the extension work on local files opened in the browser, such as video files on your device. Clicking opens the browser extension page, where file access can be allowed. */

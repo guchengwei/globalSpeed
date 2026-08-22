@@ -242,6 +242,8 @@
 			"ghostModeTooltip": "防止網站偵測播放速度變更。啟用後，預設套用至所有網站。此功能可能會在某些網站上產生問題。可使用齒輪圖示限制僅套用至特定網站。",
 			"keepOriginalSpeedLive": "直播保持原速",
 			"keepOriginalSpeedLiveTooltip": "啟用後，直播將以原始速度播放，而不套用強制的播放速度。",
+			"keepOriginalSpeedMusic": "音樂保持原速",
+			"keepOriginalSpeedMusicTooltip": "啟用後，音樂內容將以原始速度播放，而不套用強制的播放速度。",
 			"localFiles": "在本機檔案中啟用",
 			"localFilesTooltip": "讓擴充功能可以在瀏覽器中開啟的本機檔案上運作，例如您裝置中的影片檔案。點擊後會開啟瀏覽器的擴充功能頁面，您可以在其中允許存取檔案。",
 			"incognito": "在無痕模式中啟用",

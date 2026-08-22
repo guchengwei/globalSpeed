@@ -73,6 +73,8 @@ export type State = {
 	ghostModeUrlCondition?: URLCondition
 	keepOriginalSpeedLive?: boolean
 	keepOriginalSpeedLivePresets?: KosPresets
+	keepOriginalSpeedMusic?: boolean
+	keepOriginalSpeedMusicPresets?: KosPresets
 	rules?: URLRule[]
 	indicatorInit?: IndicatorInit
 	freePitch?: boolean

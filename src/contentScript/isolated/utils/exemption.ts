@@ -1,15 +1,20 @@
-import { DEFAULT_LIVE_PRESETS } from "@/defaults"
+import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_PRESETS } from "@/defaults"
 import { KosPresetEntry } from "@/types"
 import { applyMediaEvent } from "./applyMediaEvent"
 
 // Keep Original Speed classification seam: decides per media element whether enforced speed application should be skipped (Live Stream / Music Content).
-// The Live Stream Detection Channel is driven by ConfigSync; while it is off this answers "not exempt" for every element.
+// Two independent Detection Channels driven by ConfigSync; while a channel is off it answers "not exempt" for every element.
 
 // Latest channel state pushed by the content-script subscription.
 let liveChannelEnabled = false
+let musicChannelEnabled = false
 
-// Enabled Live Stream DOMAIN presets pushed from state; an undefined slice (feature never touched) resolves to the built-in seed.
+// Enabled DOMAIN presets pushed from state; an undefined slice (feature never touched) resolves to the built-in seed.
 let liveDomainPresets: KosPresetEntry[] = []
+let musicDomainPresets: KosPresetEntry[] = []
+
+// Watch-page media category reported through the MAIN↔isolated bridge; only "Music" classifies as Music Content.
+let mediaCategory: string | null = null
 
 // Per-element Live Stream classification. A rising edge onto exempt resets a previously enforced rate back to native exactly once, so repeated enforcement ticks never fight the stream.
 const exemptElements = new WeakMap<HTMLMediaElement, boolean>()
@@ -38,8 +43,17 @@ function hostnameMatchesLivePreset(): boolean {
 	return liveDomainPresets.some((entry) => entry.type === "DOMAIN" && (hostname === entry.value || hostname.endsWith(`.${entry.value}`)))
 }
 
+function hostnameMatchesMusicPreset(): boolean {
+	const hostname = location.hostname
+	return musicDomainPresets.some((entry) => entry.type === "DOMAIN" && (hostname === entry.value || hostname.endsWith(`.${entry.value}`)))
+}
+
 export function setKeepOriginalSpeedLive(enabled: boolean) {
 	liveChannelEnabled = enabled
+}
+
+export function setKeepOriginalSpeedMusic(enabled: boolean) {
+	musicChannelEnabled = enabled
 }
 
 export function setLivePresets(presets?: KosPresetEntry[]) {
@@ -47,13 +61,23 @@ export function setLivePresets(presets?: KosPresetEntry[]) {
 	liveDomainPresets = (presets ?? DEFAULT_LIVE_PRESETS).filter((entry) => entry.enabled && entry.type === "DOMAIN")
 }
 
+export function setMusicPresets(presets?: KosPresetEntry[]) {
+	musicDomainPresets = (presets ?? DEFAULT_MUSIC_PRESETS).filter((entry) => entry.enabled && entry.type === "DOMAIN")
+}
+
+export function setMusicCategory(category: string | null) {
+	mediaCategory = category
+}
+
 export function markExplicitOverride() {
 	explicitOverride = true
 }
 
 export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
-	// Loose union of Live signals — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is last and memoized.
-	const exempt = liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())
+	// Two independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media. Ordered cheapest-first; the DOM query is last and memoized.
+	const exempt =
+		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
+		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music"))
 
 	if ((exemptElements.get(elem) ?? false) !== exempt) {
 		exemptElements.set(elem, exempt)

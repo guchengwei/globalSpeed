@@ -57,6 +57,7 @@ export function SectionFlags(props: {}) {
 		ghostMode: true,
 		ghostModeUrlCondition: true,
 		keepOriginalSpeedLive: true,
+		keepOriginalSpeedMusic: true,
 		hideMediaView: true,
 		freePitch: true,
 		speedSlider: true,
@@ -336,6 +337,21 @@ export function SectionFlags(props: {}) {
 						value={!!view.keepOriginalSpeedLive}
 						onChange={(e) => {
 							setView({ keepOriginalSpeedLive: !view.keepOriginalSpeedLive })
+						}}
+					/>
+				</OptionField>
+
+				{/* Keep Original Speed: music content */}
+				<OptionField>
+					<OptionFieldLabel>
+						<span>{gvar.gsm.options.flags.keepOriginalSpeedMusic}</span>
+						<RegularTooltip title={gvar.gsm.options.flags.keepOriginalSpeedMusicTooltip} align="right" />
+					</OptionFieldLabel>
+					<Toggle
+						aria-label={gvar.gsm.options.flags.keepOriginalSpeedMusic}
+						value={!!view.keepOriginalSpeedMusic}
+						onChange={(e) => {
+							setView({ keepOriginalSpeedMusic: !view.keepOriginalSpeedMusic })
 						}}
 					/>
 				</OptionField>

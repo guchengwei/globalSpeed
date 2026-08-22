@@ -242,6 +242,8 @@
 			"ghostModeTooltip": "Impede que os sites detectem alterações na velocidade de reprodução. Quando ativado, é aplicado a todos os sites por padrão. Isso pode causar problemas em alguns sites. Use o ícone de engrenagem para limitá-lo a sites específicos.",
 			"keepOriginalSpeedLive": "Keep original speed for live streams",
 			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
 			"localFiles": "Ativar para arquivos locais",
 			"localFilesTooltip": "Permite que a extensão funcione em arquivos locais abertos no navegador, como arquivos de vídeo do seu dispositivo. Ao clicar, a página de extensões do navegador é aberta, onde o acesso a arquivos pode ser permitido.",
 			"incognito": "Ativar em janelas anônimas",
