@@ -242,6 +242,8 @@
 			"ghostModeTooltip": "Ngăn các trang web phát hiện thay đổi tốc độ phát lại. Khi được bật, tính năng này sẽ áp dụng cho tất cả các trang web theo mặc định. Điều này có thể gây ra sự cố trên một số trang. Sử dụng biểu tượng bánh răng để giới hạn cho các trang web cụ thể.",
 			"keepOriginalSpeedLive": "Keep original speed for live streams",
 			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
 			"localFiles": "Bật cho tệp cục bộ",
 			"localFilesTooltip": "Cho phép tiện ích mở rộng hoạt động với các tệp cục bộ được mở trong trình duyệt, chẳng hạn như tệp video trên thiết bị của bạn. Nhấp vào đây sẽ mở trang tiện ích của trình duyệt, nơi bạn có thể cho phép quyền truy cập tệp.",
 			"incognito": "Bật trong chế độ ẩn danh",

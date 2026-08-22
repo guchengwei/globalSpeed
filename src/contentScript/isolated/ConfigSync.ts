@@ -9,7 +9,7 @@ import { compareHotkeys, extractHotkey, FullHotkey, Hotkey } from "../../utils/k
 import { SubscribeView } from "../../utils/state"
 import { FxSync } from "./FxSync"
 import { Circle } from "./utils/Circle"
-import { setKeepOriginalSpeedLive, setLivePresets } from "./utils/exemption"
+import { setKeepOriginalSpeedLive, setKeepOriginalSpeedMusic, setLivePresets, setMusicCategory, setMusicPresets } from "./utils/exemption"
 
 const ghostModeStatic = [
 	".qq.com",
@@ -89,9 +89,20 @@ export class ConfigSync {
 		100,
 		150,
 	)
-	keepOriginalSpeedClient = new SubscribeView({ keepOriginalSpeedLive: true, keepOriginalSpeedLivePresets: true }, gvar.tabInfo.tabId, true, () => {
-		this.handleKeepOriginalSpeedChange()
-	})
+	keepOriginalSpeedClient = new SubscribeView(
+		{ keepOriginalSpeedLive: true, keepOriginalSpeedLivePresets: true, keepOriginalSpeedMusic: true, keepOriginalSpeedMusicPresets: true },
+		gvar.tabInfo.tabId,
+		true,
+		() => {
+			this.handleKeepOriginalSpeedChange()
+		},
+	)
+	handleMediaCategoryMsg = (data: any) => {
+		if (data?.type !== "MEDIA_CATEGORY") return
+		setMusicCategory(typeof data.value === "string" ? data.value : null)
+	}
+	// MAIN→isolated bridge feed: the main world reports the page's media category (YouTube only); consumed by the Music Content channel.
+	mediaCategoryFeed = gvar.os.stratumServer.msgCbs.add(this.handleMediaCategoryMsg)
 	ignoreList = new Set<string>()
 	init = () => {
 		gvar.os.eListen.keyDownCbs.add(this.handleKeyDown, this.ac.signal)
@@ -242,8 +253,10 @@ export class ConfigSync {
 	}
 	handleKeepOriginalSpeedChange = () => {
 		setKeepOriginalSpeedLive(!!this.keepOriginalSpeedClient.view?.keepOriginalSpeedLive)
-		// Undefined slice (feature never touched) lets the exemption module fall back to the built-in seed.
+		setKeepOriginalSpeedMusic(!!this.keepOriginalSpeedClient.view?.keepOriginalSpeedMusic)
+		// Undefined slices (features never touched) let the exemption module fall back to the built-in seeds.
 		setLivePresets(this.keepOriginalSpeedClient.view?.keepOriginalSpeedLivePresets)
+		setMusicPresets(this.keepOriginalSpeedClient.view?.keepOriginalSpeedMusicPresets)
 	}
 	sendGhostOn = () => gvar.os.stratumServer.send({ type: "GHOST" })
 	sendGhostOff = () => gvar.os.stratumServer.send({ type: "GHOST", off: true })

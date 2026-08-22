@@ -60,6 +60,13 @@ export const DEFAULT_LIVE_PRESETS: KosPresets = [
 	{ type: "DOMAIN", value: "www.huya.com", enabled: false },
 ]
 
+// Built-in Music Content channel DOMAIN presets. music.youtube.com ships enabled; the others are seeded as disabled candidates.
+export const DEFAULT_MUSIC_PRESETS: KosPresets = [
+	{ type: "DOMAIN", value: "music.youtube.com", enabled: true },
+	{ type: "DOMAIN", value: "soundcloud.com", enabled: false },
+	{ type: "DOMAIN", value: "music.163.com", enabled: false },
+]
+
 export function getDefaultState(): State {
 	let state = {
 		version: 15,
@@ -73,6 +80,7 @@ export function getDefaultState(): State {
 		hideMediaView: isMobile(),
 		holdToSpeed: isMobile() ? 2 : undefined,
 		keepOriginalSpeedLivePresets: DEFAULT_LIVE_PRESETS.map((entry) => ({ ...entry })),
+		keepOriginalSpeedMusicPresets: DEFAULT_MUSIC_PRESETS.map((entry) => ({ ...entry })),
 	} satisfies State
 
 	return state
