@@ -38,9 +38,16 @@ GlobalSpeed CE is an independently maintained, separately published fork of [pol
 
 ### Keep Original Speed
 
-- Live streams and music content stay at their natural rate instead of the enforced speed
-- Detection channels for Live Stream and Music Content, each with editable domain/title-keyword presets you can restore to defaults
-- Mark any page yourself from the popup to override automatic classification
+The headline feature of this fork: media classified as a live stream or music content keeps its natural rate instead of the enforced speed, while deliberate speed changes you make still apply.
+
+- **Live Stream channel** — detects real-time media from its duration, YouTube's on-page live badge, and platform tag signals; whole-domain presets (Bilibili Live, Douyu, Huya) catch dedicated streaming sites without exempting their VODs
+- **Music Content channel** — recognizes music via domain presets, YouTube's page-declared category, and title keywords
+- **Editable presets** — each channel ships built-in domain/title-keyword lists you edit as simple textboxes (with comment syntax) and restore to defaults anytime
+- **Title keyword engine** — word-boundary matching over a curated trilingual default list; marking pages yourself grows a local corpus that surfaces new keyword candidates
+- **Manual marks** — label any page as Music or Live from the popup, or mark it "normal video" to force enforcement no matter what the automatic channels say
+- **Popup badge** — every media row shows when it's exempt or under an explicit override
+- **Fully local** — classification reads only the page you opened; no network requests, ever
+- Debugging a misclassification? Set `localStorage.gsKosTrace = "1"` on the page and reload to get per-flip channel traces in the console
 
 ### Media hotkeys
 
@@ -51,7 +58,7 @@ GlobalSpeed CE is an independently maintained, separately published fork of [pol
 ### Filters & effects
 
 - Netflix movie too dark? Brighten it and dial in the contrast
-- Video too quiet? Boost volume up to 600%
+- Video too quiet? Boost volume beyond the browser's maximum via audio FX
 - Listen to songs or shows in a new way with pitch shift
 - Optionally assign hotkeys to toggle filters and effects on the fly
   _Audio Effects [Chromium Only]_
