@@ -1,3 +1,4 @@
+import { gvar } from "@/globalVar"
 import { useMediaWatch } from "../hooks/useMediaWatch"
 import { useStateView } from "../hooks/useStateView"
 import { conformSpeed } from "../utils/configUtils"
@@ -20,6 +21,8 @@ export function MainPanel(props: {}) {
 						latestViaShortcut: false,
 						speedChangeCounter: (view.speedChangeCounter || 0) + 1,
 					})
+					// The slider writes state directly, so the tab must be told this was a deliberate speed action.
+					gvar.tabInfo?.tabId != null && chrome.tabs.sendMessage(gvar.tabInfo.tabId, { type: "EXPLICIT_SPEED_OVERRIDE" } as Messages)
 				}}
 			/>
 			{view.hideMediaView ? null : <MediaViews />}

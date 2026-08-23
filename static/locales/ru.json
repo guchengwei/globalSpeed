@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Контроль скорости видео",
+	":appName": "GlobalSpeed CE: Контроль скорости видео",
 	":appDesc": "Универсальное управление скоростью видео и аудио.",
 	"_upperFirst": true,
 	"audio": {
@@ -239,6 +239,16 @@
 			"showIndicatorTooltip": "Индикатор — это визуальная обратная связь при использовании горячих клавиш",
 			"ghostMode": "Режим призрака",
 			"ghostModeTooltip": "Предотвращает обнаружение веб-сайтами изменений скорости воспроизведения. При включении по умолчанию применяется ко всем сайтам. Это может вызвать проблемы на некоторых сайтах. Используйте значок шестерёнки, чтобы ограничить действие определёнными сайтами.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Включить для локальных файлов",
 			"localFilesTooltip": "Позволяет расширению работать с локальными файлами, открытыми в браузере, например с видеофайлами на вашем устройстве. По нажатию откроется страница расширений браузера, где можно разрешить доступ к файлам.",
 			"incognito": "Включить в режиме инкогнито",
@@ -371,7 +381,9 @@
 			"importTooltip": "Импорт настроек"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Необязательно: Включить горячие клавиши на этом сайте"
+			"enableShortcutsMessage": "Необязательно: Включить горячие клавиши на этом сайте",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

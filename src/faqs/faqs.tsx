@@ -21,7 +21,7 @@ function Faqs(props: {}) {
 					a={
 						<div>
 							No, you can read the privacy policy <a href={"https://github.com/polywock/globalSpeed/blob/master/PRIVACY_POLICY.md"}>here</a>.
-							In short, Global Speed does not collect any data, nor does it send any data to any remote servers.
+							In short, GlobalSpeed CE does not collect any data, nor does it send any data to any remote servers.
 						</div>
 					}
 				/>
@@ -99,7 +99,7 @@ function Faqs(props: {}) {
 					q={"Why doesn't it work for certain videos? "}
 					a={
 						<div>
-							Global Speed doesn't support flash or canvas videos, only HTML5 video/audio. Some websites listen to speed change events and
+							GlobalSpeed CE doesn't support flash or canvas videos, only HTML5 video/audio. Some websites listen to speed change events and
 							revert the speed. Or they aggressively set the speed. To bypass this, try enabling <i>ghost mode</i> in the options page.
 						</div>
 					}
@@ -108,8 +108,8 @@ function Faqs(props: {}) {
 					q={"Why can't I change speed using the website's controls? "}
 					a={
 						<div>
-							When using the website's own controls, Global Speed cannot determine if the user was the one that actually changed the speed. To
-							workaround this, you can disable Global Speed, or using one of Global Speed's many ways to set the speed.{" "}
+							When using the website's own controls, GlobalSpeed CE cannot determine if the user was the one that actually changed the speed.
+							To workaround this, you can disable GlobalSpeed CE, or using one of GlobalSpeed CE's many ways to set the speed.{" "}
 						</div>
 					}
 				/>
@@ -135,7 +135,7 @@ function Faqs(props: {}) {
 							<li>
 								1. Go to <InlineCode>geforcenow.com</InlineCode>.
 							</li>
-							<li>2. Open Global Speed's popup .</li>
+							<li>2. Open GlobalSpeed CE's popup .</li>
 							<li>
 								3. Near the power-off button <FaPowerOff color={"#02a"} size="1.21rem" />, click on the three-dot menu
 								<IoEllipsisVertical className="align-middle" size="1.2em" /> to show more options.
@@ -147,16 +147,16 @@ function Faqs(props: {}) {
 					}
 				/>
 				<Item
-					q={"I can't type because the Global Speed hotkeys are being triggered."}
+					q={"I can't type because the GlobalSpeed CE hotkeys are being triggered."}
 					a={
 						<>
 							<ol className={LIST_CLASS}>
 								<li>
-									Suspend Global Speed using the <FaPowerOff color={"#02a"} size="1.21rem" /> button.
+									Suspend GlobalSpeed CE using the <FaPowerOff color={"#02a"} size="1.21rem" /> button.
 								</li>
 								<li>
-									For a permenant solution, while on the website, open Global Speed, click the three-dot menu, and disable shortcuts for that
-									website
+									For a permenant solution, while on the website, open GlobalSpeed CE, click the three-dot menu, and disable shortcuts for
+									that website
 								</li>
 							</ol>
 						</>
@@ -166,8 +166,8 @@ function Faqs(props: {}) {
 					q={"Why do hotkeys display incorrectly for my keyboard layout? "}
 					a={
 						<div>
-							Global Speed uses a QWERTY input by default. If using a non-QWERTY keyboard, you change the keyboard input type to virtual in the
-							options page. The option is hidden under the 3 dots. <InlineCode>[...]</InlineCode>
+							GlobalSpeed CE uses a QWERTY input by default. If using a non-QWERTY keyboard, you change the keyboard input type to virtual in
+							the options page. The option is hidden under the 3 dots. <InlineCode>[...]</InlineCode>
 						</div>
 					}
 				/>
@@ -175,7 +175,7 @@ function Faqs(props: {}) {
 					q={"Why do hotkeys not work for me? "}
 					a={
 						<div>
-							Global Speed uses a QWERTY input by default, which causes issues with some virtual keyboards. You can try changing the keyboard
+							GlobalSpeed CE uses a QWERTY input by default, which causes issues with some virtual keyboards. You can try changing the keyboard
 							input type to virtual in the options page. The option is hidden under the 3 dots. <InlineCode>[...]</InlineCode>
 						</div>
 					}
@@ -186,8 +186,8 @@ function Faqs(props: {}) {
 					q={"Why are the media shortcut keys applying to the wrong video/audio? "}
 					a={
 						<div>
-							If there multiple media elements on the page, Global Speed prioritizes videos most centered on the screen. If it's wrong, you can
-							select {<FaMousePointer size={"1.428rem"} color={"#02a"} />} the video/audio you want prioritized.
+							If there multiple media elements on the page, GlobalSpeed CE prioritizes videos most centered on the screen. If it's wrong, you
+							can select {<FaMousePointer size={"1.428rem"} color={"#02a"} />} the video/audio you want prioritized.
 						</div>
 					}
 				/>
@@ -217,7 +217,7 @@ function Faqs(props: {}) {
 							<p>
 								<b>Smart mode:</b> tries to enter fullscreen mode on the container element to mimic the website's standard fullscreen
 								behavior. This method requires learning. If you visit a new website, you must manually click on the fullscreen button at least
-								once. Otherwise, Global Speed won't know which element is the video player container.
+								once. Otherwise, GlobalSpeed CE won't know which element is the video player container.
 							</p>
 							<div>
 								<InlineCode highlighted>Note:</InlineCode> the fullscreen hotkey is buggy on some websites.

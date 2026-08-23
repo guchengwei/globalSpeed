@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Video hız kontrolü",
+	":appName": "GlobalSpeed CE: Video hız kontrolü",
 	":appDesc": "Video ve ses için evrensel hız kontrolü.",
 	"_shortcut_screenshot": true,
 	"_upperFirst": true,
@@ -241,6 +241,16 @@
 			"showIndicatorTooltip": "Gösterge, kısayollar kullanılırken görsel geri bildirimdir",
 			"ghostMode": "Hayalet modu",
 			"ghostModeTooltip": "Web sitelerinin oynatma hızı değişikliklerini algılamasını engeller. Etkinleştirildiğinde, varsayılan olarak tüm web siteleri için geçerlidir. Bazı sitelerde sorunlara neden olabilir. Belirli sitelerle sınırlandırmak için dişli simgesini kullanın.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Yerel dosyalar için etkinleştir",
 			"localFilesTooltip": "Uzantının tarayıcıda açılan yerel dosyalarda, örneğin cihazınızdaki video dosyalarında çalışmasını sağlar. Tıkladığınızda, dosya erişimine izin verebileceğiniz tarayıcı uzantı sayfası açılır.",
 			"incognito": "Gizli modda etkinleştir",
@@ -373,7 +383,9 @@
 			"importTooltip": "Ayarları içe aktar"
 		},
 		"popup": {
-			"enableShortcutsMessage": "İsteğe bağlı: Bu web sitesinde klavye kısayollarını etkinleştirin"
+			"enableShortcutsMessage": "İsteğe bağlı: Bu web sitesinde klavye kısayollarını etkinleştirin",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

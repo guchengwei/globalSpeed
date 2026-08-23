@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Kontrol kecepatan video",
+	":appName": "GlobalSpeed CE: Kontrol kecepatan video",
 	":appDesc": "Kontrol kecepatan universal untuk video dan audio.",
 	"_upperFirst": true,
 	"audio": {
@@ -239,6 +239,16 @@
 			"showIndicatorTooltip": "Indikator adalah umpan balik visual saat menggunakan pintasan",
 			"ghostMode": "Mode hantu",
 			"ghostModeTooltip": "Mencegah situs web mendeteksi perubahan kecepatan pemutaran. Saat diaktifkan, ini berlaku untuk semua situs web secara default. Ini mungkin menyebabkan masalah pada beberapa situs. Gunakan ikon roda gigi untuk membatasinya ke situs-situs tertentu.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Aktifkan untuk file lokal",
 			"localFilesTooltip": "Memungkinkan ekstensi bekerja pada file lokal yang dibuka di browser, seperti file video di perangkat Anda. Mengeklik akan membuka halaman ekstensi browser, tempat akses file dapat diizinkan.",
 			"incognito": "Aktifkan di mode Samaran",
@@ -371,7 +381,9 @@
 			"importTooltip": "Impor pengaturan"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opsional: Aktifkan pintasan keyboard di situs web ini"
+			"enableShortcutsMessage": "Opsional: Aktifkan pintasan keyboard di situs web ini",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

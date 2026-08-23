@@ -459,6 +459,26 @@ export type Gsm = {
 			ghostMode: string
 			/** Prevents websites from detecting playback speed changes. When enabled, it applies to all websites by default. This may cause issues on some sites. Use the gear icon to limit it to specific websites. */
 			ghostModeTooltip: string
+			/** Keep original speed for live streams */
+			keepOriginalSpeedLive: string
+			/** While enabled, live streams play at their native speed instead of the enforced speed. */
+			keepOriginalSpeedLiveTooltip: string
+			/** Keep original speed for music content */
+			keepOriginalSpeedMusic: string
+			/** While enabled, music content plays at its native speed instead of the enforced speed. */
+			keepOriginalSpeedMusicTooltip: string
+			/** Edit presets */
+			kosEditPresets: string
+			/** Domains */
+			kosDomains: string
+			/** Title keywords */
+			kosTitleKeywords: string
+			/** Add a domain */
+			kosAddDomain: string
+			/** Add a keyword */
+			kosAddKeyword: string
+			/** Restore defaults */
+			kosRestoreDefaults: string
 			/** Enable for local files */
 			localFiles: string
 			/** Lets the extension work on local files opened in the browser, such as video files on your device. Clicking opens the browser extension page, where file access can be allowed. */
@@ -709,6 +729,10 @@ export type Gsm = {
 		popup: {
 			/** Optional: Enable keyboard shortcuts on this website */
 			enableShortcutsMessage: string
+			/** Keep Original Speed */
+			keepOriginalSpeedBadge: string
+			/** Explicit Override */
+			explicitOverrideBadge: string
 		}
 	}
 	pageDraw: {

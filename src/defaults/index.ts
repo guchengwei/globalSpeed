@@ -1,4 +1,17 @@
-import { AnyDict, AudioFx, Context, CONTEXT_KEYS, Fx, IndicatorInit, Keybind, State, URLCondition, URLConditionPart, URLRule } from "../types"
+import {
+	AnyDict,
+	AudioFx,
+	Context,
+	CONTEXT_KEYS,
+	Fx,
+	IndicatorInit,
+	Keybind,
+	KosPresets,
+	State,
+	URLCondition,
+	URLConditionPart,
+	URLRule,
+} from "../types"
 import { chunkByPredicate, isMobile, randomId } from "../utils/helper"
 import { getDefaultMenuKeybinds, getDefaultPageKeybinds } from "./commands"
 import { filterInfos, FilterName } from "./filters"
@@ -40,6 +53,47 @@ export function generateUrlPart(origin: string): URLConditionPart {
 	}
 }
 
+// Built-in Live Stream channel DOMAIN presets. Twitch is deliberately absent: presets are whole-domain, so it would also exempt VODs.
+export const DEFAULT_LIVE_PRESETS: KosPresets = [
+	{ type: "DOMAIN", value: "live.bilibili.com", enabled: true },
+	{ type: "DOMAIN", value: "www.douyu.com", enabled: false },
+	{ type: "DOMAIN", value: "www.huya.com", enabled: false },
+]
+
+// Built-in Music Content channel DOMAIN presets. music.youtube.com ships enabled; the others are seeded as disabled candidates.
+export const DEFAULT_MUSIC_PRESETS: KosPresets = [
+	{ type: "DOMAIN", value: "music.youtube.com", enabled: true },
+	{ type: "DOMAIN", value: "soundcloud.com", enabled: false },
+	{ type: "DOMAIN", value: "music.163.com", enabled: false },
+]
+
+// Built-in Music Content channel TITLE_KEYWORD presets, shipped enabled. User-uploaded mixes/playlists carry no domain or
+// category signal, so keywords are their only catch. "live", bare "mix" and bare "cover" are deliberately excluded (too colliding).
+export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
+	{ type: "TITLE_KEYWORD", value: "playlist", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "full album", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "album", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "compilation", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "megamix", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "remix", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "soundtrack", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "ost", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "bgm", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "lofi", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "lyrics", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "official video", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "mv", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "歌单", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "音乐", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "合集", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "纯音乐", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "翻唱", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "演唱会", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "串烧", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "混音", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "专辑", enabled: true },
+]
+
 export function getDefaultState(): State {
 	let state = {
 		version: 15,
@@ -52,6 +106,9 @@ export function getDefaultState(): State {
 		keybindsUrlCondition: getDefaultKeybindsUrlConditions(),
 		hideMediaView: isMobile(),
 		holdToSpeed: isMobile() ? 2 : undefined,
+		keepOriginalSpeedLivePresets: DEFAULT_LIVE_PRESETS.map((entry) => ({ ...entry })),
+		keepOriginalSpeedMusicPresets: DEFAULT_MUSIC_PRESETS.map((entry) => ({ ...entry })),
+		keepOriginalSpeedMusicKeywords: DEFAULT_MUSIC_KEYWORDS.map((entry) => ({ ...entry })),
 	} satisfies State
 
 	return state

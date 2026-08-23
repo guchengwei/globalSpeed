@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: 동영상 속도 제어",
+	":appName": "GlobalSpeed CE: 동영상 속도 제어",
 	":appDesc": "모든 웹사이트에서 동영상와 오디오 재생 속도를 조절합니다.",
 	"_scale": 1.03,
 	"audio": {
@@ -240,6 +240,16 @@
 			"showIndicatorTooltip": "인디케이터는 단축키 사용 시 시각적 피드백입니다",
 			"ghostMode": "고스트 모드",
 			"ghostModeTooltip": "웹사이트가 재생 속도 변경을 감지하지 못하도록 합니다. 활성화되면 기본적으로 모든 웹사이트에 적용됩니다. 일부 사이트에서 문제가 발생할 수 있습니다. 특정 웹사이트에만 적용하려면 톱니바퀴 아이콘을 사용하세요",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "로컬 파일에서 사용",
 			"localFilesTooltip": "브라우저에서 연 로컬 파일(기기에 있는 동영상 파일 등)에서도 확장 프로그램이 작동하도록 합니다. 클릭하면 파일 접근을 허용할 수 있는 브라우저 확장 프로그램 페이지가 열립니다.",
 			"incognito": "시크릿 모드에서 사용",
@@ -372,7 +382,9 @@
 			"importTooltip": "설정 가져오기"
 		},
 		"popup": {
-			"enableShortcutsMessage": "선택 사항: 이 웹사이트에서 키보드 단축키를 활성화하세요"
+			"enableShortcutsMessage": "선택 사항: 이 웹사이트에서 키보드 단축키를 활성화하세요",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

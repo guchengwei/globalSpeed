@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Kontrola prędkości wideo",
+	":appName": "GlobalSpeed CE: Kontrola prędkości wideo",
 	":appDesc": "Uniwersalne sterowanie prędkością odtwarzania wideo i audio.",
 	"_upperFirst": true,
 	"audio": {
@@ -240,6 +240,16 @@
 			"showIndicatorTooltip": "Wskaźnik to wizualna informacja zwrotna podczas używania skrótów",
 			"ghostMode": "Tryb ducha",
 			"ghostModeTooltip": "Zapobiega wykrywaniu przez strony internetowe zmian prędkości odtwarzania. Po włączeniu działa domyślnie na wszystkich stronach. Może powodować problemy na niektórych witrynach. Użyj ikony koła zębatego, aby ograniczyć działanie do konkretnych stron.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Włącz dla plików lokalnych",
 			"localFilesTooltip": "Pozwala rozszerzeniu działać na plikach lokalnych otwartych w przeglądarce, na przykład na plikach wideo na Twoim urządzeniu. Kliknięcie otwiera stronę rozszerzeń przeglądarki, na której można zezwolić na dostęp do plików.",
 			"incognito": "Włącz w trybie incognito",
@@ -372,7 +382,9 @@
 			"importTooltip": "Importuj ustawienia"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opcjonalnie: Włącz skróty klawiszowe na tej stronie"
+			"enableShortcutsMessage": "Opcjonalnie: Włącz skróty klawiszowe na tej stronie",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

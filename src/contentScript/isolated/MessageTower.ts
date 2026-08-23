@@ -3,6 +3,7 @@ import type { FilterEntry, ItcInit, SvgFilter } from "@/types"
 import { MessageCallback } from "@/utils/browserUtils"
 import { documentHasFocus, injectScript } from "./utils"
 import { applyCinema, getMediaProbe, MediaEvent, MediaEventCinema, realizeMediaEvent } from "./utils/applyMediaEvent"
+import { markExplicitOverride } from "./utils/exemption"
 import { IndicatorShowOpts } from "./utils/Indicator"
 
 declare global {
@@ -13,6 +14,7 @@ declare global {
 		applyMediaEvent: { type: "APPLY_MEDIA_EVENT"; key: string; event: MediaEvent }
 		topFrameUrlUpdate: { type: "TOP_FRAME_URL_UPDATE"; value: string }
 		temporarySpeed: { type: "SET_TEMPORARY_SPEED"; factor?: number }
+		explicitSpeedOverride: { type: "EXPLICIT_SPEED_OVERRIDE" }
 		mediaProbe: { type: "MEDIA_PROBE"; key: string; formatted?: boolean }
 		csAlive: { type: "CS_ALIVE" }
 		runJs: { type: "RUN_JS"; value: string }
@@ -31,7 +33,13 @@ export class MessageTower {
 	}
 	handleMessage: MessageCallback = (msg: Messages, sender, reply) => {
 		if (msg.type === "APPLY_MEDIA_EVENT") {
+			// A deliberate per-media action from the user pierces Exempt Media.
+			markExplicitOverride()
 			realizeMediaEvent(msg.key, msg.event)
+			reply(true)
+			return
+		} else if (msg.type === "EXPLICIT_SPEED_OVERRIDE") {
+			markExplicitOverride()
 			reply(true)
 			return
 		} else if (msg.type === "SET_TEMPORARY_SPEED") {

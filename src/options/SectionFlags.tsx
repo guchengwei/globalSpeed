@@ -21,6 +21,7 @@ import { MAX_SPEED_CHROMIUM, MIN_SPEED_CHROMIUM } from "../defaults/constants"
 import { SetView, useStateView } from "../hooks/useStateView"
 import { getValidLocale, LOCALE_MAP } from "../utils/gsm"
 import { IndicatorModal } from "./IndicatorModal"
+import { KosPresetEditor } from "./KosPresetEditor"
 import { LocalFilesField } from "./LocalFilesField"
 import { OptionField } from "./OptionField"
 import { OptionFieldLabel } from "./OptionFieldLabel"
@@ -56,6 +57,11 @@ export function SectionFlags(props: {}) {
 		initialContext: true,
 		ghostMode: true,
 		ghostModeUrlCondition: true,
+		keepOriginalSpeedLive: true,
+		keepOriginalSpeedLivePresets: true,
+		keepOriginalSpeedMusic: true,
+		keepOriginalSpeedMusicPresets: true,
+		keepOriginalSpeedMusicKeywords: true,
 		hideMediaView: true,
 		freePitch: true,
 		speedSlider: true,
@@ -323,6 +329,42 @@ export function SectionFlags(props: {}) {
 						</div>
 					</FloatingFieldValue>
 				</OptionField>
+
+				{/* Keep Original Speed: live streams */}
+				<OptionField>
+					<OptionFieldLabel>
+						<span>{gvar.gsm.options.flags.keepOriginalSpeedLive}</span>
+						<RegularTooltip title={gvar.gsm.options.flags.keepOriginalSpeedLiveTooltip} align="right" />
+					</OptionFieldLabel>
+					<Toggle
+						aria-label={gvar.gsm.options.flags.keepOriginalSpeedLive}
+						value={!!view.keepOriginalSpeedLive}
+						onChange={(e) => {
+							setView({ keepOriginalSpeedLive: !view.keepOriginalSpeedLive })
+						}}
+					/>
+				</OptionField>
+
+				{/* Keep Original Speed: live presets editor */}
+				<KosPresetEditor view={view} setView={setView} channel="live" />
+
+				{/* Keep Original Speed: music content */}
+				<OptionField>
+					<OptionFieldLabel>
+						<span>{gvar.gsm.options.flags.keepOriginalSpeedMusic}</span>
+						<RegularTooltip title={gvar.gsm.options.flags.keepOriginalSpeedMusicTooltip} align="right" />
+					</OptionFieldLabel>
+					<Toggle
+						aria-label={gvar.gsm.options.flags.keepOriginalSpeedMusic}
+						value={!!view.keepOriginalSpeedMusic}
+						onChange={(e) => {
+							setView({ keepOriginalSpeedMusic: !view.keepOriginalSpeedMusic })
+						}}
+					/>
+				</OptionField>
+
+				{/* Keep Original Speed: music presets editor */}
+				<KosPresetEditor view={view} setView={setView} channel="music" />
 
 				{/* Speed changes pitch */}
 				<OptionField className="mt-7.5">

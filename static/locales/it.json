@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Controllo della velocità dei video",
+	":appName": "GlobalSpeed CE: Controllo della velocità dei video",
 	":appDesc": "Controllo universale della velocità per video e audio.",
 	"_upperFirst": true,
 	"audio": {
@@ -240,6 +240,16 @@
 			"showIndicatorTooltip": "L’indicatore è un feedback visivo quando si usano le scorciatoie",
 			"ghostMode": "Modalità fantasma",
 			"ghostModeTooltip": "Impedisce ai siti web di rilevare le modifiche alla velocità di riproduzione. Quando è abilitato, si applica a tutti i siti web per impostazione predefinita. Questo potrebbe causare problemi su alcuni siti. Usa l’icona dell’ingranaggio per limitarlo a siti specifici.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Attiva per i file locali",
 			"localFilesTooltip": "Consente all’estensione di funzionare con i file locali aperti nel browser, come i file video sul tuo dispositivo. Facendo clic si apre la pagina delle estensioni del browser, dove puoi consentire l’accesso ai file.",
 			"incognito": "Attiva in incognito",
@@ -372,7 +382,9 @@
 			"importTooltip": "Importa impostazioni"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Facoltativo: abilita le scorciatoie da tastiera su questo sito"
+			"enableShortcutsMessage": "Facoltativo: abilita le scorciatoie da tastiera su questo sito",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

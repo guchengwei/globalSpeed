@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Control de velocidad de video",
+	":appName": "GlobalSpeed CE: Control de velocidad de video",
 	":appDesc": "Control universal de velocidad para video y audio.",
 	"_upperFirst": true,
 	"audio": {
@@ -239,6 +239,16 @@
 			"showIndicatorTooltip": "El indicador es una retroalimentación visual al usar atajos",
 			"ghostMode": "Modo fantasma",
 			"ghostModeTooltip": "Impide que los sitios web detecten cambios en la velocidad de reproducción. Cuando está activado, se aplica a todos los sitios web por defecto. Esto puede causar problemas en algunos sitios. Usa el ícono de engranaje para limitarlo a sitios web específicos.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Habilitar para archivos locales",
 			"localFilesTooltip": "Permite que la extensión funcione con archivos locales abiertos en el navegador, como los archivos de video de tu dispositivo. Al hacer clic se abre la página de extensiones del navegador, donde puedes permitir el acceso a los archivos.",
 			"incognito": "Habilitar en modo incógnito",
@@ -371,7 +381,9 @@
 			"importTooltip": "Importar configuración"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Opcional: Activar atajos de teclado en este sitio web"
+			"enableShortcutsMessage": "Opcional: Activar atajos de teclado en este sitio web",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

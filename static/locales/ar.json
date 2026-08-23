@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: التحكم في سرعة الفيديو",
+	":appName": "GlobalSpeed CE: التحكم في سرعة الفيديو",
 	":appDesc": "تحكم شامل في سرعة تشغيل الفيديو والصوت.",
 	"audio": {
 		"releaseTab": "تحرير الصوت",
@@ -239,6 +239,16 @@
 			"showIndicatorTooltip": "المؤشر هو ردود الفعل البصرية عند استخدام الاختصارات",
 			"ghostMode": "وضع الشبح",
 			"ghostModeTooltip": "يمنع المواقع من اكتشاف تغييرات سرعة التشغيل. عند التفعيل، يتم تطبيقه على جميع المواقع بشكل افتراضي. قد يسبب مشاكل في بعض المواقع. استخدم رمز الترس لتقييده بمواقع محددة.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "تفعيل للملفات المحلية",
 			"localFilesTooltip": "يسمح للإضافة بالعمل مع الملفات المحلية المفتوحة في المتصفح، مثل ملفات الفيديو على جهازك. يفتح النقر صفحة إضافات المتصفح حيث يمكن السماح بالوصول إلى الملفات.",
 			"incognito": "تفعيل في وضع التصفح المتخفي",
@@ -371,7 +381,9 @@
 			"importTooltip": "استيراد الإعدادات"
 		},
 		"popup": {
-			"enableShortcutsMessage": "اختياري: تمكين اختصارات لوحة المفاتيح على هذا الموقع"
+			"enableShortcutsMessage": "اختياري: تمكين اختصارات لوحة المفاتيح على هذا الموقع",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

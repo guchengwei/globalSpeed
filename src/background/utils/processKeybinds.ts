@@ -792,6 +792,8 @@ export async function setValue(init: SetValueInit) {
 		override.lastSpeed = (await fetchView({ speed: true }, tabInfo.tabId)).speed
 		if (override.lastSpeed === value) delete override.lastSpeed
 		override.speed = value
+		// A deliberate shortcut/keybind speed change pierces Exempt Media; rule-driven writes (rules.ts) never pass through here.
+		chrome.tabs.sendMessage(tabInfo.tabId, { type: "EXPLICIT_SPEED_OVERRIDE" } as Messages)
 	} else if (kb.command === "volume") {
 		sendMediaEvent({ type: "SET_VOLUME", value, relative: false }, mediaKey, mediaTabInfo.tabId, mediaTabInfo.frameId)
 	} else if (kb.command === "fxFilter") {

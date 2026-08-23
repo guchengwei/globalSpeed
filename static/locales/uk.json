@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Контроль швидкості відео",
+	":appName": "GlobalSpeed CE: Контроль швидкості відео",
 	":appDesc": "Універсальне керування швидкістю відео та аудіо.",
 	"_upperFirst": true,
 	"audio": {
@@ -240,6 +240,16 @@
 			"showIndicatorTooltip": "Індикатор — це візуальний зворотний зв’язок при використанні гарячих клавіш",
 			"ghostMode": "Режим привида",
 			"ghostModeTooltip": "Запобігає виявленню зміни швидкості відтворення вебсайтами. При ввімкненні за замовчуванням застосовується до всіх сайтів. Це може спричинити проблеми на деяких сайтах. Використовуйте значок шестерні, щоб обмежити дію для окремих сайтів.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Увімкнути для локальних файлів",
 			"localFilesTooltip": "Дозволяє розширенню працювати з локальними файлами, відкритими у браузері, наприклад з відеофайлами на вашому пристрої. Після натискання відкриється сторінка розширень браузера, де можна дозволити доступ до файлів.",
 			"incognito": "Увімкнути в анонімному режимі",
@@ -372,7 +382,9 @@
 			"importTooltip": "Імпортувати налаштування"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Необов’язково: Увімкнути гарячі клавіші на цьому сайті"
+			"enableShortcutsMessage": "Необов’язково: Увімкнути гарячі клавіші на цьому сайті",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {

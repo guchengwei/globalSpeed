@@ -1,5 +1,5 @@
 {
-	":appName": "Global Speed: Steuerung der Video-Geschwindigkeit",
+	":appName": "GlobalSpeed CE: Steuerung der Video-Geschwindigkeit",
 	":appDesc": "Universelle Geschwindigkeitssteuerung für Video und Audio.",
 	"_upperFirst": true,
 	"audio": {
@@ -240,6 +240,16 @@
 			"showIndicatorTooltip": "Der Indikator ist visuelles Feedback beim Verwenden von Tastenkombinationen",
 			"ghostMode": "Geistermodus",
 			"ghostModeTooltip": "Verhindert, dass Websites Änderungen der Wiedergabegeschwindigkeit erkennen. Wenn aktiviert, gilt dies standardmäßig für alle Websites. Dies kann auf einigen Websites zu Problemen führen. Verwende das Zahnradsymbol, um es auf bestimmte Websites zu beschränken.",
+			"keepOriginalSpeedLive": "Keep original speed for live streams",
+			"keepOriginalSpeedLiveTooltip": "While enabled, live streams play at their native speed instead of the enforced speed.",
+			"keepOriginalSpeedMusic": "Keep original speed for music content",
+			"keepOriginalSpeedMusicTooltip": "While enabled, music content plays at its native speed instead of the enforced speed.",
+			"kosEditPresets": "Edit presets",
+			"kosDomains": "Domains",
+			"kosTitleKeywords": "Title keywords",
+			"kosAddDomain": "Add a domain",
+			"kosAddKeyword": "Add a keyword",
+			"kosRestoreDefaults": "Restore defaults",
 			"localFiles": "Für lokale Dateien aktivieren",
 			"localFilesTooltip": "Ermöglicht der Erweiterung, mit lokalen Dateien zu arbeiten, die im Browser geöffnet sind, etwa Videodateien auf deinem Gerät. Ein Klick öffnet die Erweiterungsseite des Browsers, auf der du den Dateizugriff erlauben kannst.",
 			"incognito": "Im Inkognitomodus aktivieren",
@@ -372,7 +382,9 @@
 			"importTooltip": "Einstellungen importieren"
 		},
 		"popup": {
-			"enableShortcutsMessage": "Optional: Tastenkürzel auf dieser Website aktivieren"
+			"enableShortcutsMessage": "Optional: Tastenkürzel auf dieser Website aktivieren",
+			"keepOriginalSpeedBadge": "Keep Original Speed",
+			"explicitOverrideBadge": "Explicit Override"
 		}
 	},
 	"pageDraw": {
