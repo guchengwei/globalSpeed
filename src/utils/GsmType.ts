@@ -56,6 +56,18 @@ export type Gsm = {
 		/** Video contrast */
 		videoContrast: string
 	}
+	music: {
+		/** Mark as music */
+		markAs: string
+		/** Unmark music */
+		unmark: string
+	}
+	live: {
+		/** Mark as live */
+		markAs: string
+		/** Unmark live */
+		unmark: string
+	}
 	header: {
 		/** Pinned tabs keep their own settings instead of sharing the global context */
 		pinTooltip: string

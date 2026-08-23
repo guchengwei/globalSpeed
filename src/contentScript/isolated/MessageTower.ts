@@ -1,9 +1,9 @@
 import { gvar } from "@/globalVar"
-import type { FilterEntry, ItcInit, SvgFilter } from "@/types"
+import type { FilterEntry, ItcInit, MarkLabel, SvgFilter } from "@/types"
 import { MessageCallback } from "@/utils/browserUtils"
 import { documentHasFocus, injectScript } from "./utils"
 import { applyCinema, getMediaProbe, MediaEvent, MediaEventCinema, realizeMediaEvent } from "./utils/applyMediaEvent"
-import { markExplicitOverride } from "./utils/exemption"
+import { buildMarkCorpusEntry, markExplicitOverride } from "./utils/exemption"
 import { IndicatorShowOpts } from "./utils/Indicator"
 
 declare global {
@@ -24,6 +24,7 @@ declare global {
 		addPane: { type: "ADD_PANE"; filters: FilterEntry[]; svgFilters: SvgFilter[] }
 		itc: { type: "ITC"; inits: ItcInit[] }
 		cinema: { type: "CINEMA"; event: MediaEventCinema }
+		requestMarkCorpusSnapshot: { type: "REQUEST_MARK_CORPUS_SNAPSHOT"; label: MarkLabel }
 	}
 }
 
@@ -99,6 +100,10 @@ export class MessageTower {
 		} else if (msg.type === "CINEMA") {
 			prepareCinema(msg.event)
 			reply(true)
+			return
+		} else if (msg.type === "REQUEST_MARK_CORPUS_SNAPSHOT") {
+			// Manual-mark corpus capture (#24): the popup asks the page for its signal snapshot at mark time.
+			reply(buildMarkCorpusEntry(msg.label))
 			return
 		}
 	}

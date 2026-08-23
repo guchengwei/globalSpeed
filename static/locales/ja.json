@@ -30,6 +30,14 @@
 		"videoBrightness": "動画の明るさ",
 		"videoContrast": "動画のコントラスト"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "ピン留めされたタブは、グローバルコンテキストを共有せず、独自の設定を保持します",
 		"audioEffects": "オーディオエフェクト",

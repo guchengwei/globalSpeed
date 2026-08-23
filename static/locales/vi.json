@@ -30,6 +30,14 @@
 		"videoBrightness": "Độ sáng video",
 		"videoContrast": "Độ tương phản video"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Các tab đã ghim giữ cài đặt riêng thay vì dùng chung ngữ cảnh toàn cầu",
 		"audioEffects": "Hiệu ứng âm thanh",

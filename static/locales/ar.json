@@ -29,6 +29,14 @@
 		"videoBrightness": "سطوع الفيديو",
 		"videoContrast": "تباين الفيديو"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "علامات التبويب المثبتة تحتفظ بإعداداتها الخاصة بدلاً من مشاركة السياق العام",
 		"audioEffects": "مؤثرات صوتية",
