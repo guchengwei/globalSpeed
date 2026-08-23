@@ -450,10 +450,10 @@ export type KosPresetEntry = {
 /** The preset entries of one detection channel (Live Stream, later Music Content). */
 export type KosPresets = KosPresetEntry[]
 
-/** The two Detection Channels a page can be manually marked as (#24). */
-export type MarkLabel = "music" | "live"
+/** Labels a page can be manually marked with (#24/#32): the two Detection Channels plus the Negative Mark override. */
+export type MarkLabel = "music" | "live" | "negative"
 
-/** One user-driven page classification: a normalized URL marked as one Detection Channel's content. */
+/** One user-driven page classification: a normalized URL marked as one Detection Channel's content (or negatively, #32). */
 export type MarkedPage = {
 	/** normalizePageUrl output — the page's stable identity across SPA navigations and player-parameter churn. */
 	url: string
@@ -461,10 +461,11 @@ export type MarkedPage = {
 	at: number
 }
 
-/** Per-channel lists of user marks. Undefined state ⇒ no marks; Music and Live are independent. */
+/** Per-channel lists of user marks. Undefined state ⇒ no marks; Music and Live are independent, Negative overrides both. */
 export type ManualMarks = {
 	music: MarkedPage[]
 	live: MarkedPage[]
+	negative: MarkedPage[]
 }
 
 /**

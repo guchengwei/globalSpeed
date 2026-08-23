@@ -273,8 +273,12 @@ export class ConfigSync {
 		setLivePresets(this.keepOriginalSpeedClient.view?.keepOriginalSpeedLivePresets)
 		setMusicPresets(this.keepOriginalSpeedClient.view?.keepOriginalSpeedMusicPresets)
 		setMusicKeywords(this.keepOriginalSpeedClient.view?.keepOriginalSpeedMusicKeywords)
-		// Manual marks ride the same subscription: per-channel lists, undefined ⇒ none (#24).
-		setManualMarks(this.keepOriginalSpeedClient.view?.manualMarks?.music, this.keepOriginalSpeedClient.view?.manualMarks?.live)
+		// Manual marks ride the same subscription: per-channel lists, undefined ⇒ none (#24/#32).
+		setManualMarks(
+			this.keepOriginalSpeedClient.view?.manualMarks?.music,
+			this.keepOriginalSpeedClient.view?.manualMarks?.live,
+			this.keepOriginalSpeedClient.view?.manualMarks?.negative,
+		)
 	}
 	sendGhostOn = () => gvar.os.stratumServer.send({ type: "GHOST" })
 	sendGhostOff = () => gvar.os.stratumServer.send({ type: "GHOST", off: true })

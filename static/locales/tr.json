@@ -39,6 +39,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Sabitlenen sekmeler global bağlamı paylaşmak yerine kendi ayarlarını korur",
 		"audioEffects": "Ses efektleri",

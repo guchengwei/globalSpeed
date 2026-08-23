@@ -38,6 +38,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Tab yang disematkan mengekalkan tetapannya sendiri, bukan berkongsi konteks global",
 		"audioEffects": "Kesan audio",

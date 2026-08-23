@@ -38,6 +38,10 @@
 		"markAs": "標記為直播",
 		"unmark": "取消直播標記"
 	},
+	"negative": {
+		"markAs": "標記為普通影片",
+		"unmark": "取消普通標記"
+	},
 	"header": {
 		"pinTooltip": "釘選的分頁會保留獨立設定，而非共用全域情境",
 		"audioEffects": "音訊效果",

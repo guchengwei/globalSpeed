@@ -39,3 +39,7 @@ _Avoid_: whitelist, blocklist, template
 **Manual Mark**:
 A page the user explicitly labeled Music Content or Live Stream from the popup, overriding automatic classification for that page and feeding a local corpus for future keyword curation.
 _Avoid_: pinning, forcing
+
+**Negative Mark**:
+A page the user explicitly marked "normal video" from the popup; enforcement always applies to it, overriding every positive signal including Manual Marks. Mutually exclusive per URL with positive marks.
+_Avoid_: enforce mark, unmarking, blocklist

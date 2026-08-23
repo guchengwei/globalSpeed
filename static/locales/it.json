@@ -38,6 +38,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Le schede fissate mantengono le proprie impostazioni anziché condividere il contesto globale",
 		"audioEffects": "Effetti audio",

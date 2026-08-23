@@ -19,6 +19,14 @@
 // msg.event.type === "PLAYBACK_RATE"` — same honest caveat as above, keep in sync with the source.
 // The MediaEvent union (applyMediaEvent.ts) was enumerated for #30; PLAYBACK_RATE is its ONLY
 // rate-altering member (SetPlaybackRate.set), so it alone may pierce Exempt Media.
+//
+// #32 adds two more replicas:
+//   - classifyExempt (src/contentScript/isolated/utils/exemption.ts): the negative-mark guard must stand
+//     BEFORE both channel unions so a Negative Mark forces exempt=false over every positive signal
+//     (duration/badge/domains/category/keywords/mix/music-manual/live-manual). Automatic signals are stood
+//     in by booleans; the manual-mark matching and channel gating are replicated faithfully.
+//   - toggleManualMark (src/popup/Header.tsx) mutual exclusivity: a FRESH mark evicts the same normalized
+//     URL from the other two lists; unmarking touches only its own list.
 
 function normalizePageUrl(url) {
 	try {
@@ -36,7 +44,39 @@ function normalizePageUrl(url) {
 
 function matchesManualMark(marks, label, href) {
 	const url = normalizePageUrl(href)
-	return (label === "music" ? marks.music : marks.live).some((m) => m.url === url)
+	return (label === "music" ? marks.music : label === "live" ? marks.live : marks.negative).some((m) => m.url === url)
+}
+
+// Replicated verbatim from src/contentScript/isolated/utils/exemption.ts classifyExempt (#24/#32).
+// `signals` = { live, music } booleans standing in for the automatic Live/Music hits (duration, badge,
+// DOMAIN presets, category "Music", title keywords, RD-mix context); the manual-mark terms and the
+// per-channel enable gates are faithful. The negative guard precedes the whole union.
+function classifyExempt(state, href, signals) {
+	if (matchesManualMark(state.marks, "negative", href)) return false
+	return (
+		(state.liveEnabled && (signals.live || matchesManualMark(state.marks, "live", href))) ||
+		(state.musicEnabled && (signals.music || matchesManualMark(state.marks, "music", href)))
+	)
+}
+
+// Replicated from src/popup/Header.tsx toggleManualMark (#24/#32): read-modify-write over all three lists;
+// a fresh mark unshifts onto its list AND evicts the same normalized URL from the other two; an unmark
+// splices out of its own list only. `url` arrives pre-normalized exactly as the popup computes it.
+// Returns the next ManualMarks (pure — input untouched).
+function toggleManualMark(marks, label, url) {
+	const next = { music: [...marks.music], live: [...marks.live], negative: [...marks.negative] }
+	const list = next[label]
+	const existingIndex = list.findIndex((m) => m.url === url)
+	if (existingIndex >= 0) {
+		list.splice(existingIndex, 1)
+	} else {
+		list.unshift({ url, title: "", at: Date.now() })
+		for (const other of ["music", "live", "negative"]) {
+			if (other === label) continue
+			next[other] = next[other].filter((m) => m.url !== url)
+		}
+	}
+	return next
 }
 
 // Replicated verbatim from src/contentScript/isolated/MessageTower.ts handleMessage (#30):
@@ -152,6 +192,104 @@ for (const [type, event] of Object.entries(mediaEventShapes)) {
 	check(`${type}-shaped APPLY_MEDIA_EVENT does NOT mark`, marksExplicitOverride({ type: "APPLY_MEDIA_EVENT", key: "", event }), false)
 }
 check("non-media message types never mark via this gate", marksExplicitOverride({ type: "SET_TEMPORARY_SPEED", factor: 2 }), false)
+
+console.log("\n-- #32 negative-mark precedence (negative guard precedes both channel unions) --")
+const OMELETTE = "https://www.youtube.com/watch?v=9Ah4tW-k8Ao"
+const channelsOn = { liveEnabled: true, musicEnabled: true }
+const noMarks = { music: [], live: [], negative: [] }
+const categoryHit = { live: false, music: true } // stands in for category="Music"/keyword/domain/mix hits
+// Control: without a negative mark the Music signal still exempts.
+check("control: category hit exempts when not negatively marked", classifyExempt({ ...channelsOn, marks: noMarks }, OMELETTE, categoryHit), true)
+check(
+	"control: manual-positive music mark exempts when not negatively marked",
+	classifyExempt({ ...channelsOn, marks: { music: [{ url: OMELETTE, title: "t", at: 1 }], live: [], negative: [] } }, OMELETTE, {
+		live: false,
+		music: false,
+	}),
+	true,
+)
+// Negative beats each positive class of signal.
+check(
+	"negative beats category=Music",
+	classifyExempt({ ...channelsOn, marks: { music: [], live: [], negative: [{ url: OMELETTE, title: "t", at: 3 }] } }, OMELETTE, {
+		live: false,
+		music: true,
+	}),
+	false,
+)
+check(
+	"negative beats keyword hit",
+	classifyExempt(
+		{ ...channelsOn, marks: { music: [], live: [], negative: [{ url: normalizePageUrl(OMELETTE), title: "t", at: 3 }] } },
+		`${OMELETTE}&t=42&si=x`,
+		{ live: false, music: true },
+	),
+	false,
+)
+check(
+	"negative beats manual-positive (same-URL music mark)",
+	classifyExempt(
+		{
+			...channelsOn,
+			marks: { music: [{ url: OMELETTE, title: "t", at: 1 }], live: [], negative: [{ url: OMELETTE, title: "t", at: 2 }] },
+		},
+		OMELETTE,
+		{ live: false, music: false },
+	),
+	false,
+)
+check(
+	"negative beats manual-positive (live channel) + auto live signals",
+	classifyExempt(
+		{ ...channelsOn, marks: { music: [], live: [{ url: OMELETTE, title: "t", at: 1 }], negative: [{ url: OMELETTE, title: "t", at: 2 }] } },
+		OMELETTE,
+		{ live: true, music: true },
+	),
+	false,
+)
+check(
+	"negative on ANOTHER page does not suppress THIS page's category hit",
+	classifyExempt(
+		{ ...channelsOn, marks: { music: [], live: [], negative: [{ url: "https://www.youtube.com/watch?v=zzzzzz", title: "t", at: 1 }] } },
+		OMELETTE,
+		categoryHit,
+	),
+	true,
+)
+// Edge rule: stored while channels are OFF, still overriding once they re-enable.
+const channelsOff = { liveEnabled: false, musicEnabled: false }
+const negMarked = { music: [], live: [], negative: [{ url: OMELETTE, title: "t", at: 1 }] }
+check("channels OFF: nothing exempts regardless of marks", classifyExempt({ ...channelsOff, marks: negMarked }, OMELETTE, categoryHit), false)
+check(
+	"negative stored while OFF keeps forcing non-exemption after re-enable",
+	classifyExempt({ ...channelsOn, marks: negMarked }, OMELETTE, categoryHit),
+	false,
+)
+check(
+	"unmarking the negative restores exemption for the category hit",
+	classifyExempt({ ...channelsOn, marks: toggleManualMark(negMarked, "negative", normalizePageUrl(OMELETTE)) }, OMELETTE, categoryHit),
+	true,
+)
+
+console.log("\n-- #32 mutual exclusivity per URL (popup toggle semantics) --")
+let marksState = { music: [{ url: OMELETTE, title: "t", at: 1 }], live: [], negative: [] }
+marksState = toggleManualMark(marksState, "negative", OMELETTE)
+check("marking enforce removes same-URL music entry", marksState.music.length, 0)
+check("marking enforce stores the negative entry once", marksState.negative.length, 1)
+check("negative entry carries the normalized URL identity", marksState.negative[0].url, normalizePageUrl(OMELETTE))
+marksState = toggleManualMark(marksState, "music", normalizePageUrl(`${OMELETTE}&list=PLx`))
+check("marking music removes same-URL enforce entry", marksState.negative.length, 0)
+check("marking music stores the music entry", marksState.music.length, 1)
+marksState = toggleManualMark(marksState, "live", OMELETTE)
+check("marking live evicts same-URL music too", marksState.music.length, 0)
+marksState = toggleManualMark(marksState, "live", OMELETTE)
+check(
+	"unmarking live leaves the other lists untouched",
+	JSON.stringify([marksState.live.length, marksState.music.length, marksState.negative.length]),
+	"[0,0,0]",
+)
+marksState = toggleManualMark(marksState, "negative", "https://other.example/a")
+check("a different URL's enforce mark never touches this page's marks", marksState.music.length, 0)
 
 console.log(failed === 0 ? "\nAll fixtures pass." : `\n${failed} fixture(s) FAILED.`)
 process.exit(failed === 0 ? 0 : 1)

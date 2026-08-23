@@ -318,14 +318,18 @@ function getKebabList(
 		}
 	}
 
-	// Manual marks (#24): offered wherever the popup knows the tab's http(s) URL. Music and Live are
+	// Manual marks (#24/#32): offered wherever the popup knows the tab's http(s) URL. Music and Live are
 	// independent channels, so a page can carry both marks at once; each item toggles to its unmark label.
+	// A negative mark supersedes them per URL (#32): while the page is enforce-marked only the negative
+	// item is offered, mirroring the mutual exclusivity toggleManualMark enforces on storage.
 	const rawTabUrl = gvar.tabInfo?.url
 	if (/^https?:/i.test(rawTabUrl || "")) {
 		const normalized = normalizePageUrl(rawTabUrl!)
-		for (const label of ["music", "live"] as MarkLabel[]) {
+		const negativeMarked = !!view.manualMarks?.negative?.some((m) => m.url === normalized)
+		for (const label of ["music", "live", "negative"] as MarkLabel[]) {
+			if (negativeMarked && label !== "negative") continue
 			const marked = !!view.manualMarks?.[label]?.some((m) => m.url === normalized)
-			const name = label === "music" ? "markMusic" : "markLive"
+			const name = `mark${label[0].toUpperCase()}${label.slice(1)}`
 			list.push({
 				label: marked ? gvar.gsm[label].unmark : gvar.gsm[label].markAs,
 				name,
@@ -402,7 +406,11 @@ async function toggleManualMark(label: MarkLabel) {
 
 	// Read-modify-write against storage rather than the render-time view, so two popups can't clobber each other's marks.
 	const current = await fetchView(["manualMarks"])
-	const marks = { music: current.manualMarks?.music ?? [], live: current.manualMarks?.live ?? [] }
+	const marks = {
+		music: current.manualMarks?.music ?? [],
+		live: current.manualMarks?.live ?? [],
+		negative: current.manualMarks?.negative ?? [],
+	}
 	const list = [...marks[label]]
 	const existingIndex = list.findIndex((m) => m.url === url)
 
@@ -410,6 +418,12 @@ async function toggleManualMark(label: MarkLabel) {
 		list.splice(existingIndex, 1)
 	} else {
 		list.unshift({ url, title: entry?.title ?? "", at: Date.now() })
+		// Mutual exclusivity per URL (#32): a fresh mark evicts the same URL from the other lists, so
+		// enforce replaces music/live and vice versa. Unmarking touches nothing but its own list.
+		for (const other of ["music", "live", "negative"] as MarkLabel[]) {
+			if (other === label) continue
+			marks[other] = marks[other].filter((m) => m.url !== url)
+		}
 	}
 	pushView({ override: { manualMarks: { ...marks, [label]: list } } })
 
