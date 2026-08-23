@@ -21,7 +21,7 @@ import { MAX_SPEED_CHROMIUM, MIN_SPEED_CHROMIUM } from "../defaults/constants"
 import { SetView, useStateView } from "../hooks/useStateView"
 import { getValidLocale, LOCALE_MAP } from "../utils/gsm"
 import { IndicatorModal } from "./IndicatorModal"
-import { KosPresetEditor } from "./KosPresetEditor"
+import { KosCorpusCandidates, KosPresetEditor } from "./KosPresetEditor"
 import { LocalFilesField } from "./LocalFilesField"
 import { OptionField } from "./OptionField"
 import { OptionFieldLabel } from "./OptionFieldLabel"
@@ -62,6 +62,7 @@ export function SectionFlags(props: {}) {
 		keepOriginalSpeedMusic: true,
 		keepOriginalSpeedMusicPresets: true,
 		keepOriginalSpeedMusicKeywords: true,
+		markCorpus: true,
 		hideMediaView: true,
 		freePitch: true,
 		speedSlider: true,
@@ -365,6 +366,9 @@ export function SectionFlags(props: {}) {
 
 				{/* Keep Original Speed: music presets editor */}
 				<KosPresetEditor view={view} setView={setView} channel="music" />
+
+				{/* Keyword candidates mined from the Manual Mark corpus (#26) */}
+				<KosCorpusCandidates view={view} setView={setView} />
 
 				{/* Speed changes pitch */}
 				<OptionField className="mt-7.5">

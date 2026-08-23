@@ -1,5 +1,6 @@
-// Regression harness for #21/#22/#23: default Music Content TITLE_KEYWORD seeds "music"/"cover" (#21) and "音楽"/"カバー"
-// (#22), plus the #22 YouTube Mix-context signal (list=RD*) and the #23 trilingual expansion (EN/JP/CN batches).
+// Regression harness for #21/#22/#23/#26: default Music Content TITLE_KEYWORD seeds "music"/"cover" (#21) and
+// "音楽"/"カバー" (#22), the #22 YouTube Mix-context signal (list=RD*), the #23 trilingual expansion (EN/JP/CN
+// batches), and the #26 franchise-format seed "the first take".
 //
 // Unlike stale-cache-invalidation.mjs (which must replicate its machinery because the seam is stateful),
 // this fixture reads the seed values straight out of the DEFAULT_MUSIC_KEYWORDS literal in
@@ -59,7 +60,8 @@ check(`seed list contains "music"`, keywordValues.includes("music"), true)
 check(`seed list contains "cover"`, keywordValues.includes("cover"), true)
 check(`seed list contains "音楽"`, keywordValues.includes("音楽"), true)
 check(`seed list contains "カバー"`, keywordValues.includes("カバー"), true)
-check(`seed count is at least 68`, keywordValues.length >= 68, true)
+check(`seed count is at least 69`, keywordValues.length >= 69, true)
+check(`seed list contains "the first take"`, keywordValues.includes("the first take"), true)
 
 // #23 verbatim addition batches (docs/music-keywords.md is the curation record). The scan above only picks
 // enabled:true lines, so presence here proves both presence and enabled state.
@@ -105,6 +107,7 @@ check(`"musical" does NOT hit via boundary collision`, classifies("A Musical His
 check(`"discovery" does NOT hit via boundary collision`, classifies("Discovery Channel: Ocean Life"), false)
 check(`"【和訳】Drifting Soul 音楽" classifies via JP seed`, classifies("【和訳】Drifting Soul 音楽"), true)
 check(`"歌ってみたカバー集" classifies via JP cover seed`, classifies("歌ってみたカバー集"), true)
+check(`"Aimer - Zankyou Sanka / The First Take" classifies via #26 franchise seed`, classifies("Aimer - Zankyou Sanka / The First Take"), true)
 check(`watch URL with list=RD… classifies via Mix context`, mixContextExempts("www.youtube.com", "?v=x&list=RD54yKHYSwJcQ"), true)
 check(`same video with list=PL… does NOT hit via Mix context`, mixContextExempts("www.youtube.com", "?v=x&list=PLxyz789"), false)
 check(`bare watch URL without list does NOT hit via Mix context`, mixContextExempts("www.youtube.com", "?v=x"), false)

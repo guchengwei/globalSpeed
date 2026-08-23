@@ -8,7 +8,7 @@ The maintained curation record for the Music Content Detection Channel's `TITLE_
 - Non-ASCII (CJK or mixed-script) keywords match as **lowercased substrings**: `作業用BGM` hits mid-title without any boundary requirement.
 - Match sources per pass: the frame's `document.title`, the mediaSession metadata title (YouTube only), and platform keyword tags; the YouTube Mix URL signal (`list=RD…`) is separate and lives in `exemption.ts`.
 
-## English seeds (15)
+## English seeds (16)
 
 | Keyword                | Why it ships                                                                                                                             |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -27,6 +27,7 @@ The maintained curation record for the Music Content Detection Channel's `TITLE_
 | `concert`              | Full concert film uploads.                                                                                                               |
 | `m/v`                  | Slash form used widely on official K-pop uploads; the escaped boundary builder matches the literal slash form.                           |
 | `mix`                  | User-uploaded DJ/channel mixes; deliberate reversal of the substring-era exclusion — boundaries make "mixed"/"remix"/"megamix" safe now. |
+| `the first take`       | Franchise format (#26): THE FIRST TAKE's one-take live sessions brand their titles, and multi-word matching keeps it precise.            |
 
 ## Japanese seeds (12)
 

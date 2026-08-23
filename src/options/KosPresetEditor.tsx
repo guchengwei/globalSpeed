@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { GoX } from "react-icons/go"
 import { Tooltip } from "@/comps/Tooltip"
 import { Button } from "@/comps/ui/button"
 import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_KEYWORDS, DEFAULT_MUSIC_PRESETS } from "@/defaults"
 import { gvar } from "@/globalVar"
 import { produce } from "@/utils/helper"
+import { distinctMarkedUrlCount, KeywordCandidate, mineKeywordCandidates } from "@/utils/markCorpusMining"
 import { ThrottledTextInput } from "../comps/ThrottledTextInput"
 import { SetView } from "../hooks/useStateView"
 import { KosPresetEntry, KosPresets, StateView } from "../types"
@@ -51,6 +52,59 @@ export function KosPresetEditor(props: { view: StateView; setView: SetView; chan
 					)}
 				</div>
 			)}
+		</div>
+	)
+}
+
+// Keyword mining over the Manual Mark corpus (#26): a collapsible candidate list under the Music Content KOS
+// rows. Each Add writes through the same setView path as the preset editor above, so the new keyword lands in
+// keepOriginalSpeedMusicKeywords and vanishes from the candidate list (mined candidates never duplicate
+// existing preset values). Everything runs locally off the already-captured markCorpus state field.
+export function KosCorpusCandidates(props: { view: StateView; setView: SetView }) {
+	const [open, setOpen] = useState(false)
+	const keywords = props.view.keepOriginalSpeedMusicKeywords
+
+	const candidates = useMemo(
+		() =>
+			open && props.view.markCorpus?.length
+				? mineKeywordCandidates(
+						props.view.markCorpus,
+						[...DEFAULT_MUSIC_KEYWORDS, ...(keywords ?? [])].map((entry) => entry.value),
+					)
+				: [],
+		[open, props.view.markCorpus, keywords],
+	)
+
+	const add = (candidate: KeywordCandidate) => {
+		props.setView({
+			keepOriginalSpeedMusicKeywords: [...(keywords ?? []), { type: "TITLE_KEYWORD", value: candidate.value, enabled: true }],
+		})
+	}
+
+	return (
+		<div className="mb-7.5 ml-5">
+			<Button aria-expanded={open} onClick={() => setOpen(!open)}>
+				{gvar.gsm.options.flags.kosCorpusHeading}
+			</Button>
+
+			{open &&
+				(distinctMarkedUrlCount(props.view.markCorpus ?? []) < 2 ? (
+					<div className="mt-3.75 text-sm opacity-50">{gvar.gsm.options.flags.kosCorpusEmpty}</div>
+				) : (
+					<div className="mt-3.75">
+						{candidates.map((candidate) => (
+							<div key={candidate.value} className="mb-2 grid grid-cols-[max-content_1fr_max-content] items-center gap-x-2">
+								<span className="text-sm tabular-nums opacity-50" title={candidate.docFreq.toString()}>
+									{candidate.docFreq}
+								</span>
+								<span className="break-all">{candidate.value}</span>
+								<Button aria-label={`${gvar.gsm.options.flags.kosCorpusAdd} ${candidate.value}`} onClick={() => add(candidate)}>
+									{gvar.gsm.options.flags.kosCorpusAdd}
+								</Button>
+							</div>
+						))}
+					</div>
+				))}
 		</div>
 	)
 }
