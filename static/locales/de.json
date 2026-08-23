@@ -30,6 +30,14 @@
 		"videoBrightness": "Videohelligkeit",
 		"videoContrast": "Videokontrast"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Angepinnte Tabs behalten ihre eigenen Einstellungen, statt den globalen Kontext zu teilen",
 		"audioEffects": "Audioeffekte",

@@ -76,6 +76,8 @@ export type State = {
 	keepOriginalSpeedMusic?: boolean
 	keepOriginalSpeedMusicPresets?: KosPresets
 	keepOriginalSpeedMusicKeywords?: KosPresets
+	manualMarks?: ManualMarks
+	markCorpus?: MarkedCorpusEntry[]
 	rules?: URLRule[]
 	indicatorInit?: IndicatorInit
 	freePitch?: boolean
@@ -445,6 +447,39 @@ export type KosPresetEntry = {
 
 /** The preset entries of one detection channel (Live Stream, later Music Content). */
 export type KosPresets = KosPresetEntry[]
+
+/** The two Detection Channels a page can be manually marked as (#24). */
+export type MarkLabel = "music" | "live"
+
+/** One user-driven page classification: a normalized URL marked as one Detection Channel's content. */
+export type MarkedPage = {
+	/** normalizePageUrl output — the page's stable identity across SPA navigations and player-parameter churn. */
+	url: string
+	title: string
+	at: number
+}
+
+/** Per-channel lists of user marks. Undefined state ⇒ no marks; Music and Live are independent. */
+export type ManualMarks = {
+	music: MarkedPage[]
+	live: MarkedPage[]
+}
+
+/**
+ * Local-only snapshot of a page's classification signals captured at mark time (#24). Input corpus for a
+ * future keyword-extraction/cleansing pass (#25); every signal slot is individually optional because
+ * extraction is best-effort and partial entries are fine.
+ */
+export type MarkedCorpusEntry = {
+	label: MarkLabel
+	url: string
+	rawUrl: string
+	title?: string
+	msTitle?: string
+	tags?: string[]
+	category?: string
+	at: number
+}
 
 export type MediaProbe = {
 	formatted?: string

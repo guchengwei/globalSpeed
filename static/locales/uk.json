@@ -30,6 +30,14 @@
 		"videoBrightness": "Яскравість відео",
 		"videoContrast": "Контраст відео"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Закріплені вкладки зберігають власні налаштування замість спільного глобального контексту",
 		"audioEffects": "Аудіоефекти",

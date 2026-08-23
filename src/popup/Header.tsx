@@ -8,13 +8,20 @@ import { Gear, Pin, Zap } from "@/comps/svgs"
 import { Tooltip } from "@/comps/Tooltip"
 import { gvar } from "@/globalVar"
 import { KebabList, KebabListProps } from "@/options/KebabList"
-import { AnyDict, ORL_CONTEXT_KEYS, StateView } from "@/types"
+import { AnyDict, MarkedCorpusEntry, MarkLabel, ORL_CONTEXT_KEYS, StateView } from "@/types"
 import { cn, feedbackText, isMobile, produce, replaceArgs } from "@/utils/helper"
-import { pushView } from "@/utils/state"
+import { fetchView, pushView } from "@/utils/state"
 import { getDefaultFx, getDefaultURLCondition, getDefaultURLConditionPart } from "../defaults"
 import { useCaptureStatus } from "../hooks/useCaptureStatus"
 import { SetView, useStateView } from "../hooks/useStateView"
-import { checkFilterDeviation, checkFilterDeviationOrActiveSvg, getActiveParts, requestSyncContextMenu, testURLWithPart } from "../utils/configUtils"
+import {
+	checkFilterDeviation,
+	checkFilterDeviationOrActiveSvg,
+	getActiveParts,
+	normalizePageUrl,
+	requestSyncContextMenu,
+	testURLWithPart,
+} from "../utils/configUtils"
 
 type HeaderProps = {
 	panel: number
@@ -52,6 +59,7 @@ export function Header(props: HeaderProps) {
 		circleWidget: true,
 		keybindsUrlCondition: true,
 		sawEnableShortcutOverlayCount: true,
+		manualMarks: true,
 	})
 
 	let kebabInfo: {
@@ -60,7 +68,7 @@ export function Header(props: HeaderProps) {
 		showAlert: boolean
 	} = useMemo(() => {
 		return getKebabList(view, setView)
-	}, [!!view, view?.keybindsUrlCondition, view?.circleWidget])
+	}, [!!view, view?.keybindsUrlCondition, view?.circleWidget, view?.manualMarks])
 
 	if (!view) return <div></div>
 
@@ -310,6 +318,23 @@ function getKebabList(
 		}
 	}
 
+	// Manual marks (#24): offered wherever the popup knows the tab's http(s) URL. Music and Live are
+	// independent channels, so a page can carry both marks at once; each item toggles to its unmark label.
+	const rawTabUrl = gvar.tabInfo?.url
+	if (/^https?:/i.test(rawTabUrl || "")) {
+		const normalized = normalizePageUrl(rawTabUrl!)
+		for (const label of ["music", "live"] as MarkLabel[]) {
+			const marked = !!view.manualMarks?.[label]?.some((m) => m.url === normalized)
+			const name = label === "music" ? "markMusic" : "markLive"
+			list.push({
+				label: marked ? gvar.gsm[label].unmark : gvar.gsm[label].markAs,
+				name,
+				checked: marked,
+			})
+			fns[name] = () => toggleManualMark(label)
+		}
+	}
+
 	// Only shown if on http(s) protocol and have local shortcuts.
 	if (gvar.showShortcutControl) {
 		let url = new URL(gvar.tabInfo.url)
@@ -358,6 +383,48 @@ function getEnableShortcutsKebabInfo(view: StateView, setView: SetView, url: URL
 }
 
 let alreadyUpdatedCount = false
+
+// Corpus cap (#24): ring buffer of captured signal snapshots feeding the future #25 keyword pass.
+const MARK_CORPUS_CAP = 500
+
+async function toggleManualMark(label: MarkLabel) {
+	const rawUrl = gvar.tabInfo?.url
+	if (!rawUrl) return
+	const url = normalizePageUrl(rawUrl)
+
+	// Snapshot the page's signals first: the round-trip also yields the page title, which the popup cannot
+	// see otherwise. If the tab has no content script (chrome://, dead frame) the reply fails — tolerated,
+	// the bare mark below still stands but no corpus entry is captured (nothing to exempt or sample there).
+	let entry: MarkedCorpusEntry | undefined
+	try {
+		entry = await chrome.tabs.sendMessage(gvar.tabInfo.tabId, { type: "REQUEST_MARK_CORPUS_SNAPSHOT", label } as Messages, { frameId: 0 })
+	} catch {}
+
+	// Read-modify-write against storage rather than the render-time view, so two popups can't clobber each other's marks.
+	const current = await fetchView(["manualMarks"])
+	const marks = { music: current.manualMarks?.music ?? [], live: current.manualMarks?.live ?? [] }
+	const list = [...marks[label]]
+	const existingIndex = list.findIndex((m) => m.url === url)
+
+	if (existingIndex >= 0) {
+		list.splice(existingIndex, 1)
+	} else {
+		list.unshift({ url, title: entry?.title ?? "", at: Date.now() })
+	}
+	pushView({ override: { manualMarks: { ...marks, [label]: list } } })
+
+	if (existingIndex >= 0) {
+		// Unmark removes the mark only; the corpus is append-only history and stays untouched (#24).
+		return
+	}
+	if (!entry) return
+
+	// Ring buffer: newest appended last, oldest dropped from the front past the cap.
+	const corpus = [...((await fetchView(["markCorpus"])).markCorpus ?? []), entry]
+	if (corpus.length > MARK_CORPUS_CAP) corpus.splice(0, corpus.length - MARK_CORPUS_CAP)
+	pushView({ override: { markCorpus: corpus } })
+}
+
 async function showOverlayForKebab(sawCount: number) {
 	const option = document.querySelector(".shortcutsKebabOption")
 	if (!option) return

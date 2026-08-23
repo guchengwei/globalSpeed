@@ -1,5 +1,6 @@
 import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_KEYWORDS, DEFAULT_MUSIC_PRESETS } from "@/defaults"
-import { KosPresetEntry } from "@/types"
+import { KosPresetEntry, MarkedCorpusEntry, MarkedPage, MarkLabel } from "@/types"
+import { normalizePageUrl } from "@/utils/configUtils"
 import { applyMediaEvent } from "./applyMediaEvent"
 
 // Keep Original Speed classification seam: decides per media element whether enforced speed application should be skipped (Live Stream / Music Content).
@@ -245,14 +246,75 @@ export function markExplicitOverride() {
 	explicitOverride = true
 }
 
+// Persistent user marks pushed from state (#24): pages the user explicitly classified. The lists survive
+// channel toggles and restarts; whether a mark currently FIRES is decided solely by the union gates in
+// classifyExempt — so marking while a channel toggle is OFF still stores the mark (and its corpus entry)
+// but exempts nothing until that channel is enabled again.
+let manualMusicPages: MarkedPage[] = []
+let manualLivePages: MarkedPage[] = []
+
+export function setManualMarks(music?: MarkedPage[], live?: MarkedPage[]) {
+	manualMusicPages = music ?? []
+	manualLivePages = live ?? []
+}
+
+// Normalized current-page href, memoized on the raw string: steady-state passes pay one equality, and SPA
+// navigations (which rewrite location.href without a reload) flip the key and re-normalize.
+let manualHrefRaw: string | null = null
+let manualHrefNormalized = ""
+
+function currentNormalizedHref(): string {
+	const href = location.href
+	if (href !== manualHrefRaw) {
+		manualHrefRaw = href
+		manualHrefNormalized = normalizePageUrl(href)
+	}
+	return manualHrefNormalized
+}
+
+function matchesManualMark(label: MarkLabel): boolean {
+	const url = currentNormalizedHref()
+	return label === "music" ? manualMusicPages.some((m) => m.url === url) : manualLivePages.some((m) => m.url === url)
+}
+
+// Corpus capture for a fresh mark (#24): snapshots this module's platform signals into a local-only entry,
+// the input corpus for a future keyword-extraction pass (#25). Every source read is individually tolerated
+// (a partial entry is fine) and nothing here touches the network.
+export function buildMarkCorpusEntry(label: MarkLabel): MarkedCorpusEntry {
+	let title: string | undefined
+	let msTitle: string | undefined
+	try {
+		title = document.title ?? undefined
+	} catch {}
+	try {
+		msTitle = (navigator as any).mediaSession?.metadata?.title || undefined
+	} catch {}
+	return {
+		label,
+		url: currentNormalizedHref(),
+		rawUrl: location.href,
+		title,
+		msTitle,
+		tags: extractPlatformTags(),
+		category: mediaCategory ?? undefined,
+		at: Date.now(),
+	}
+}
+
 // Pure per-element classification: independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media.
 // Ordered cheapest-first; the DOM query is memoized, keyword matching runs over the title/tag sources, and the Mix-context check
-// (string equality steady-state) closes the Music union.
+// (string equality steady-state) closes the Music union. Manual marks sit INSIDE their channel's gate on purpose: they only fire
+// while that Detection Channel is enabled (see setManualMarks).
 // Deliberately side-effect-free so snapshot publishing can read it without disturbing edge/reset bookkeeping.
 function classifyExempt(elem: HTMLMediaElement): boolean {
 	return (
-		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
-		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || matchesMusicKeyword() || youTubeMixContextPresent()))
+		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent() || matchesManualMark("live"))) ||
+		(musicChannelEnabled &&
+			(hostnameMatchesMusicPreset() ||
+				mediaCategory === "Music" ||
+				matchesMusicKeyword() ||
+				youTubeMixContextPresent() ||
+				matchesManualMark("music")))
 	)
 }
 

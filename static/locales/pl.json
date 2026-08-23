@@ -30,6 +30,14 @@
 		"videoBrightness": "Jasność wideo",
 		"videoContrast": "Kontrast wideo"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Przypięte karty zachowują własne ustawienia zamiast współdzielić kontekst globalny",
 		"audioEffects": "Efekty dźwiękowe",

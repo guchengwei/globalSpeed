@@ -30,6 +30,14 @@
 		"videoBrightness": "Luminosité de la vidéo",
 		"videoContrast": "Contraste de la vidéo"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Les onglets épinglés conservent leurs propres paramètres au lieu de partager le contexte global",
 		"audioEffects": "Effets audio",

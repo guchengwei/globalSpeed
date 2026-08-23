@@ -31,6 +31,14 @@
 		"videoBrightness": "Brilho do vídeo",
 		"videoContrast": "Contraste do vídeo"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"unmark": "Unmark music"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"unmark": "Unmark live"
+	},
 	"header": {
 		"pinTooltip": "Abas fixadas mantêm suas próprias configurações em vez de compartilhar o contexto global",
 		"audioEffects": "Efeitos de áudio",

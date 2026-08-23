@@ -57,6 +57,18 @@
 		"videoContrast": "Video contrast",
 		"!videoContrast": "Default browser context-menu label for a shortcut that adjusts video contrast"
 	},
+	"music": {
+		"markAs": "Mark as music",
+		"!markAs": "Popup kebab action classifying the current page as Music Content; toggles to the unmark action while marked (#24)",
+		"unmark": "Unmark music",
+		"!unmark": "Popup kebab action removing the current page's Music Content mark (#24)"
+	},
+	"live": {
+		"markAs": "Mark as live",
+		"!markAs": "Popup kebab action classifying the current page as a Live Stream; toggles to the unmark action while marked (#24)",
+		"unmark": "Unmark live",
+		"!unmark": "Popup kebab action removing the current page's Live Stream mark (#24)"
+	},
 	"header": {
 		"pinTooltip": "Pinned tabs keep their own settings instead of sharing the global context",
 		"!pinTooltip": "Tooltip for the pin-tab button in the popup header. Also appended after the 'Pin by default' tooltip on the Options page, so it must read as a standalone statement about pinned tabs.",

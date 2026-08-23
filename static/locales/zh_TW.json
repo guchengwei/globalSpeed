@@ -30,6 +30,14 @@
 		"videoBrightness": "影片亮度",
 		"videoContrast": "影片對比"
 	},
+	"music": {
+		"markAs": "標記為音樂",
+		"unmark": "取消音樂標記"
+	},
+	"live": {
+		"markAs": "標記為直播",
+		"unmark": "取消直播標記"
+	},
 	"header": {
 		"pinTooltip": "釘選的分頁會保留獨立設定，而非共用全域情境",
 		"audioEffects": "音訊效果",

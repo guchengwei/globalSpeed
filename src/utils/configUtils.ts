@@ -29,6 +29,24 @@ export function conformSpeed(speed: number, rounding = 2) {
 	return clamp(0.07, 16, round(speed, rounding))
 }
 
+// URL identity for manual marks (#24): strips hash/search churn so SPA navigations and player-parameter
+// noise resolve to one stable key per page. YouTube watch URLs keep only their ?v= id (t=, list=, si=… are
+// churn); Bilibili /video/BV… pages already carry their identity in the pathname, so the generic branch
+// covers them. Must never throw: unparseable input falls back to a crude query/hash cut of the raw string.
+export function normalizePageUrl(url: string): string {
+	try {
+		const parsed = new URL(url)
+		if ((parsed.hostname === "youtube.com" || parsed.hostname.endsWith(".youtube.com")) && parsed.pathname === "/watch") {
+			const id = parsed.searchParams.get("v")
+			if (id) return `${parsed.origin}/watch?v=${id}`
+		}
+		return `${parsed.origin}${parsed.pathname}`
+	} catch {}
+	const [noHash] = url.split("#")
+	const [noSearch] = noHash.split("?")
+	return noSearch ?? ""
+}
+
 export function formatSpeed(speed: number, snip = false) {
 	let speedString = speed.toFixed(2)
 	if (snip && speedString.at(-1) === "0") {
