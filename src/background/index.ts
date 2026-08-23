@@ -17,7 +17,6 @@ import { isMobile } from "@/utils/helper"
 import { dumpConfig, fetchView, getKeysByPrefix, PREFIX_SETS, pushView, restoreConfig } from "@/utils/state"
 import { clearClosed } from "./utils/getAutoMedia"
 import { buildItcInit, ProcessKeybinds, releaseTemporarySpeed, setValue, type SetValueInit } from "./utils/processKeybinds"
-import { handlePromo } from "./utils/promo"
 
 declare global {
 	interface GlobalVar {
@@ -174,7 +173,6 @@ declare global {
 		sendMediaEventTo: { type: "SEND_MEDIA_EVENT_TO"; tabId: number; frameId?: number; event: MediaEvent; key: string }
 		setValue: { type: "SET_STATEFUL"; init: SetValueInit }
 		requestItcInit: { type: "REQUEST_ITC_INIT"; kb: Keybind }
-		handlePromo: { type: "HANDLE_PROMO" }
 	}
 }
 
@@ -230,9 +228,6 @@ chrome.runtime.onMessage.addListener((msg: Messages, sender, reply) => {
 			new ProcessKeybinds(matches, { tabId: sender.tab.id, frameId: sender.frameId, windowId: sender.tab.windowId }, "pageKeybinds")
 		})
 		reply(true)
-	} else if (msg.type === "HANDLE_PROMO") {
-		handlePromo().finally(() => reply(true))
-		return true
 	} else if (msg.type === "RELEASED_TEMPORARY_SPEED") {
 		releaseTemporarySpeed()
 	} else if (msg.type === "SET_SESSION") {
@@ -319,5 +314,3 @@ gvar.es.addWatcher([], async (changes) => {
 		chrome.tabs.sendMessage(tab.id, { type: "BG_SPEED_OVERRIDE", value } as Messages)
 	})
 })
-
-gvar.es.onStateReady(handlePromo)

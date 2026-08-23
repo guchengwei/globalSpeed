@@ -26,10 +26,6 @@
 	--text-lg: 1.1em;
 	--text-xl: 1.2em;
 	--text-2xl: 1.3em;
-	--text-promo-sm: 14px;
-	--text-promo-md: 15px;
-	--text-promo-lg: 16px;
-	--text-promo-xl: 18px;
 
 	/* --ground is the page ground behind --background; shadcn has no token for it. Everything
 	   else follows shadcn's roles so its components drop in without a translation layer. */
