@@ -1,4 +1,4 @@
-// Regression harness for #18 (stale Keep Original Speed caches across SPA media reuse), #20 (mediaSession title source goes stale across Bilibili SPA navs), and #25 (category freshness decoupled from element lifecycle via a periodic self-check).
+// Regression harness for #18 (stale Keep Original Speed caches across SPA media reuse), #20 (mediaSession title source goes stale across Bilibili SPA navs), #25 (category freshness decoupled from element lifecycle via a periodic self-check), and #31 (category read via the live player response + yt-navigate-finish).
 //
 // Replication note (honest): this script REPLICATES the match-source machinery of
 // src/contentScript/isolated/utils/exemption.ts (keyword compilation, platform-tag TTL probe,
@@ -34,6 +34,18 @@
 // unforced memo compares normalized values (string | undefined), so unchanged values send nothing
 // and →null clears; sends are counted at the bridge (handleMediaCategoryMsg) to prove exact-once.
 //
+// Seq E (#31): window.ytInitialPlayerResponse is assigned once per document load and NEVER
+// reassigned across YouTube SPA navigations, so post-#25 code still re-reads a stale global
+// forever. The red leg rides that TRUE structural red — the global stays "Music" while each
+// navigation's real category flips Music→People & Blogs→Music, no lifecycle events fire, and the
+// #25 timer faithfully re-reads the SAME stale global every tick (zero messages, exemption frozen).
+// The green leg adds the shipped #31 wiring: reportMediaCategory reads through readCategory — the
+// live player element's getPlayerResponse() first (fresh per navigation), the document-load global
+// as fallback — plus a yt-navigate-finish listener running the same unforced report path. The
+// navigate event is simulated as firing once right after each navigation commits its world change;
+// classification must follow each flip within one probe period, with exactly one bridge message
+// per flip.
+//
 // Debounce modeling: the shipped trigger is lodash.debounce(500, trailing) inside MediaTower; here
 // the trailing-edge contract is simulated by advancing the clock past the quiet window. Coalescing
 // (one bridge message per burst) is asserted explicitly.
@@ -42,14 +54,15 @@ const DEBOUNCE_MS = 500
 const TAG_TTL_MS = 1000
 const SELF_CHECK_MS = 2000
 
-// World stands in for document / navigator / location / ytInitialPlayerResponse.
+// World stands in for document / navigator / location / ytInitialPlayerResponse / #movie_player.
 function makeWorld() {
 	return {
 		hostname: "www.youtube.com",
 		docTitle: "",
 		mediaSessionTitle: "",
 		tags: [],
-		pageCategory: undefined, // ytInitialPlayerResponse microformat category
+		pageCategory: undefined, // window.ytInitialPlayerResponse microformat category (assigned once per document load, never reassigned)
+		playerCategory: undefined, // #movie_player.getPlayerResponse() microformat category (refreshed per SPA navigation)
 		mediaSessionReads: 0, // counts every navigator.mediaSession consultation (proof surface for #20)
 	}
 }
@@ -79,9 +92,10 @@ function onPlayerHost(hostname) {
 // Builds the classifier replica. `fixed` selects the shipped-at-HEAD wiring (no invalidation seam,
 // memo-gated-only category reporting); otherwise the #18 wiring is active. `msScoped` selects the
 // #20 mediaSession host gate; pre-#20 wiring reads the metadata title unconditionally on every host.
-// All other mechanics are identical in both configurations — each flag's delta below is exactly the
-// shipped diff.
-function makeClassifier(world, clock, fixed, msScoped) {
+// `livePlayer` selects the #31 readCategory source chain (live player object first, document-load
+// global as fallback); pre-#31 wiring reads the global alone. All other mechanics are identical in
+// both configurations — each flag's delta below is exactly the shipped diff.
+function makeClassifier(world, clock, fixed, msScoped, livePlayer) {
 	const musicKeywordMatchers = KEYWORD_VALUES.map(compileKeywordMatcher).filter((m) => m.regex || m.substring)
 	const musicDomainPresets = [] // no DOMAIN hits: keeps the sequence purely on category/keyword channels
 	const liveChannelEnabled = false
@@ -169,11 +183,19 @@ function makeClassifier(world, clock, fixed, msScoped) {
 		return musicChannelEnabled && (musicDomainPresets.some(() => false) || mediaCategory === "Music" || matchesMusicKeyword())
 	}
 
-	// MAIN-world reportMediaCategory. Pre-fix: string-only, memo-gated. Post-fix (#18): forced probes bypass the memo once and also report a now-category-less page as null. Post-#25: every unforced path (document_start, wiggle, self-check tick) memo-compares normalized values (string | undefined), so unchanged values send nothing and →null clears stale categories.
+	// MAIN-world reportMediaCategory. Pre-fix: string-only, memo-gated. Post-fix (#18): forced probes bypass the memo once and also report a now-category-less page as null. Post-#25: every unforced path (document_start, wiggle, self-check tick) memo-compares normalized values (string | undefined), so unchanged values send nothing and →null clears stale categories. Post-#31: every path reads through readCategory — live player response first (#movie_player.getPlayerResponse(), fresh per navigation), document-load global as fallback; pre-#31 the global alone.
+	function readCategory() {
+		if (livePlayer) {
+			const live = world.playerCategory
+			if (typeof live === "string") return live
+		}
+		const global = world.pageCategory
+		return typeof global === "string" ? global : undefined
+	}
+
 	function reportMediaCategory(force = false) {
 		if (!fixed && force) throw new Error("forced probes do not exist pre-fix")
-		const category = world.pageCategory
-		const next = typeof category === "string" ? category : undefined
+		const next = readCategory()
 		if (!force && next === reportedCategory) return false
 		// Sends MEDIA_CATEGORY over the bridge; the isolated side consumes it verbatim (bridge roundtrip collapsed):
 		handleMediaCategoryMsg(next)
@@ -500,6 +522,101 @@ function seqD(timed) {
 	check(`[${label}] Seq D GREEN: clearing reported exactly once`, c.stats.sends, 4)
 }
 
+// ---------------------------------------------------------------------------
+// Seq E (#31) — SPA navigations where the global object stays stale but the live player response
+// moves. window.ytInitialPlayerResponse is assigned once per document load and NEVER reassigned,
+// so its microformat category stays "Music" across every navigation below, while the player-method
+// category (what #movie_player.getPlayerResponse() actually returns per navigation) flips
+// Music→People & Blogs→Music. NO emptied/loadedmetadata ever fires (MSE SourceBuffer swaps); the
+// #25 heartbeat ticks in BOTH legs but pre-#31 it re-reads the SAME stale global. Titles/tags carry
+// no music keywords, so the category channel is the sole exemption input throughout. World evolution
+// is IDENTICAL for both legs; only the readCategory wiring differs.
+// ---------------------------------------------------------------------------
+function seqE(livePlayer) {
+	const label = livePlayer ? "post-nav" : "pre-nav "
+	const world = makeWorld()
+	let now = 60_000
+	const clock = () => now
+	// Post-#18/#20/#25 wiring in BOTH legs — invalidation, host-scoped mediaSession, and the 2s
+	// heartbeat all exist here. The only delta is #31's source chain + navigate listener.
+	const c = makeClassifier(world, clock, true, true, livePlayer)
+	const elem = { name: "spa-reused <video>" }
+
+	// Shipped #25 heartbeat replica (identical shape to Seq D's): ticks fire at exact SELF_CHECK_MS
+	// spacing and run the UNFORCED read through whatever source chain the leg ships.
+	let nextTickAt = now + SELF_CHECK_MS
+	function advance(delta) {
+		now += delta
+		while (now >= nextTickAt) {
+			c.reportMediaCategory()
+			nextTickAt += SELF_CHECK_MS
+		}
+	}
+
+	// yt-navigate-finish replica (#31): YouTube commits the new watch-page data, THEN dispatches the
+	// event on document; the shipped listener runs the same UNFORCED report path as the heartbeat.
+	// Pre-#31 no listener exists, so this driver is inert there.
+	function navigateFinish() {
+		if (livePlayer) c.reportMediaCategory()
+	}
+
+	// Page 1 — Music watch page: global and player agree on "Music".
+	world.docTitle = "Video One - Channel A"
+	world.tags = ["alpha"]
+	world.pageCategory = "Music"
+	world.playerCategory = "Music"
+	c.reportMediaCategory() // document_start / first-wiggle report
+	check(`[${label}] Seq E music page classifies exempt via the category channel`, c.classifyExempt(), true)
+	c.shouldSkipEnforcement(elem)
+	check(`[${label}] Seq E initial category reported exactly once`, c.stats.sends, 1)
+
+	// Idle document: ticks over an unchanged value stay silent.
+	advance(SELF_CHECK_MS * 2)
+	check(`[${label}] Seq E steady ticks on unchanged category send nothing`, c.stats.sends, 1)
+
+	// Navigation 1 → People & Blogs recipe video. Title/tags/player response all move; the global
+	// does NOT (the issue's core fact).
+	world.docTitle = "Video Two - Beef Brisket Recipe"
+	world.tags = ["brisket"]
+	world.playerCategory = "People & Blogs"
+	navigateFinish()
+
+	if (!livePlayer) {
+		// RED: the memo still holds "Music" off the stale global, so the navigate moment passes silently…
+		check(`[${label}] Seq E RED: navigation past a stale global sends nothing`, c.stats.sends, 1)
+		check(`[${label}] Seq E RED: recipe video still classified exempt`, c.classifyExempt(), true)
+		// …and the heartbeat cannot rescue it: five more probe periods faithfully re-read the SAME stale global.
+		advance(SELF_CHECK_MS * 5)
+		c.shouldSkipEnforcement(elem)
+		check(
+			`[${label}] Seq E RED: five probe periods later still exempt, still one total message`,
+			`${c.stats.sends}/${c.classifyExempt()}`,
+			"1/true",
+		)
+		return
+	}
+
+	// GREEN: classification follows the flip AT the navigate event — inside one probe period.
+	check(`[${label}] Seq E GREEN: People & Blogs followed the flip within one probe period`, c.classifyExempt(), false)
+	check(`[${label}] Seq E GREEN: flip reported exactly once`, c.stats.sends, 2)
+	c.shouldSkipEnforcement(elem)
+	// Steady state after the flip: several ticks re-read the same fresh player value — silence.
+	advance(SELF_CHECK_MS * 3)
+	check(`[${label}] Seq E GREEN: post-flip ticks send nothing further`, c.stats.sends, 2)
+	check(`[${label}] Seq E GREEN: un-exemption produced no extra entry reset`, c.stats.resets, 1)
+
+	// Navigation 2 → back to a Music watch page. Global STILL "Music"; the player flips back.
+	world.docTitle = "Video Three - Channel C Session"
+	world.tags = ["delta"]
+	world.playerCategory = "Music"
+	navigateFinish()
+	check(`[${label}] Seq E GREEN: flip back to Music reported exactly once and re-exempts`, `${c.stats.sends}/${c.classifyExempt()}`, "3/true")
+	c.shouldSkipEnforcement(elem)
+	check(`[${label}] Seq E GREEN: exempt re-entry reset native rate exactly once`, c.stats.resets, 2)
+	advance(SELF_CHECK_MS * 2)
+	check(`[${label}] Seq E GREEN: steady state after re-entry sends nothing further`, c.stats.sends, 3)
+}
+
 // Empty-slot semantics invariant (#20 review point): an empty source string can never match any
 // compiled matcher — substring needs a non-empty haystack hit, word-boundary regexes need a word
 // char. So even a slot that ever held "" could not conjure a keyword classification.
@@ -561,7 +678,9 @@ function seqBurst() {
 	check(`[burst] 8-event burst coalesces to one re-probe`, reprobes, 1)
 }
 
-console.log("== #18 stale-cache invalidation + #20 mediaSession scope + #25 category self-check regression harness ==\n")
+console.log(
+	"== #18 stale-cache invalidation + #20 mediaSession scope + #25 category self-check + #31 live-player category read regression harness ==\n",
+)
 seqA(false)
 seqA(true)
 seqB(false)
@@ -570,6 +689,8 @@ seqC(false)
 seqC(true)
 seqD(false)
 seqD(true)
+seqE(false)
+seqE(true)
 checkEmptySlotInvariant()
 seqBurst()
 console.log(failed === 0 ? "\nAll fixtures pass." : `\n${failed} fixture(s) FAILED.`)
