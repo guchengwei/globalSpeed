@@ -46,7 +46,30 @@ the artifacts; this checklist covers everything a person must do, top to bottom.
 6. Review the draft, then publish it so the artifacts are publicly downloadable alongside the AMO
    listing.
 
-## 3. Submit to AMO listed
+## 3. Submit to AMO
+
+Two channels are available. Pick per release; nothing about one locks out the other later.
+
+- **Listed** (public): searchable listing, auto-updates via AMO, full human review. Choose this
+  when the goal is self-serve installation by anyone.
+- **Unlisted** (private distribution): Mozilla-signed xpi, installable in Gecko browsers (Zen
+  included) simply by opening the downloaded file — no public page. Choose this for
+  invite-only/personal distribution. Updates are manual: publish each new signed build via GitHub
+  Releases and re-share it.
+
+### Unlisted → listed conversion path
+
+Converting later is just a fresh listed submission — nothing about having shipped unlisted locks
+anything:
+
+1. Keep cutting releases exactly as above (the CI-produced `source.zip` is what makes any future
+   listed review cheap).
+2. On conversion day, take the latest `global-speed-firefox.zip` + `source.zip` from the current
+   GitHub Release and follow the listed steps below with section 4's notes.
+3. License posture travels with you: the courtesy request to upstream (see §4 "Fork relationship")
+   should be sent early and dated; a granted license retroactively covers all past unlisted builds.
+
+### Listed steps
 
 1. Sign in to the [developer hub](https://addons.mozilla.org/developers/) and open the
    GlobalSpeed CE listing (first time: create it — the add-on name and ID are read from the
