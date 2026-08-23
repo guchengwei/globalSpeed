@@ -333,6 +333,41 @@ export function getKosMediaState(elem: HTMLMediaElement): { exempt: boolean; ove
 	return { exempt, overridden: exempt && explicitOverride }
 }
 
+// #28: opt-in classification trace for field diagnosis (localStorage gsKosTrace=1, read lazily once per document).
+// Firefox's native Picture-in-Picture window hosts only a frame-clone of the tab's <video>, so what plays there is exactly
+// whatever this tab classifies right now — a PiP-window anomaly IS a tab-side flip, and these lines identify which channel
+// flipped. Zero cost when off: the flag short-circuits before any signal re-evaluation.
+function kosTraceOn(): boolean {
+	if (kosTrace === undefined) {
+		try {
+			kosTrace = localStorage.getItem("gsKosTrace") === "1"
+		} catch {
+			kosTrace = false
+		}
+	}
+	return kosTrace
+}
+let kosTrace: boolean | undefined
+
+function classificationSignals(elem: HTMLMediaElement): string {
+	const hits: string[] = []
+	if (matchesManualMark("negative")) hits.push("negative-mark")
+	if (liveChannelEnabled) {
+		if (elem.duration === Infinity) hits.push("duration=Infinity")
+		if (hostnameMatchesLivePreset()) hits.push("live-domain")
+		if (youTubeLiveBadgePresent()) hits.push("yt-live-badge")
+		if (matchesManualMark("live")) hits.push("manual-live")
+	}
+	if (musicChannelEnabled) {
+		if (hostnameMatchesMusicPreset()) hits.push("music-domain")
+		if (mediaCategory === "Music") hits.push("category=Music")
+		if (matchesMusicKeyword()) hits.push("keyword")
+		if (youTubeMixContextPresent()) hits.push("mix-context")
+		if (matchesManualMark("music")) hits.push("manual-music")
+	}
+	return hits.join("+") || "none"
+}
+
 export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
 	const exempt = classifyExempt(elem)
 
@@ -342,6 +377,18 @@ export function shouldSkipEnforcement(elem: HTMLMediaElement): boolean {
 		explicitOverride = false
 		// Entering the exempt state: one-time reset to native rate (Infinity is truthy, so the dispatcher accepts it).
 		exempt && applyMediaEvent(elem, { type: "PLAYBACK_RATE", value: 1, freePitch: false })
+		kosTraceOn() &&
+			console.info(
+				"[GS-KOS]",
+				exempt ? "EXEMPT" : "ENFORCED",
+				classificationSignals(elem),
+				JSON.stringify({
+					url: location.href,
+					title: document.title.slice(0, 80),
+					duration: elem.duration,
+					category: mediaCategory ?? null,
+				}),
+			)
 	}
 
 	// An active Explicit Override pierces the skip: ticks then carry the user's own chosen rate into Exempt Media instead of fighting it.
