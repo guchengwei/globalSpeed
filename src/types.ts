@@ -100,15 +100,6 @@ export type State = {
 	longPressThreshold?: number
 	doubleTapThreshold?: number
 	sawEnableShortcutOverlayCount?: number
-	// Will use this to self-promo other projects
-	selfPromoCountR?: number
-	selfPromoFirstR?: number
-	selfPromoHideTsR?: number
-	selfPromoData?: {
-		fetched: number
-		updated?: number
-		config: SelfPromoConfig
-	}
 } & Context
 
 export type StoredKey = `${"t" | "r"}:${number}:${keyof Context | "isPinned"}` | `${"g" | "x"}:${keyof State}`
@@ -536,28 +527,3 @@ export type MatrixTemplate = {
 }
 
 export type KeybindType = "pageKeybinds" | "browserKeybinds" | "menuKeybinds"
-
-export type SelfPromoStyle = "NEWLINE" | "INLINE"
-
-export type SelfPromoConfig = {
-	groups: SelfPromoGroup[]
-}
-
-/** A group is picked first (weighted by fr), then one of its entries. */
-export type SelfPromoGroup = {
-	entries: SelfPromoEntry[]
-	/** Shown behind a question mark icon. */
-	tooltip: string
-	style?: SelfPromoStyle
-	fr?: number
-}
-
-export type SelfPromoEntry = {
-	primary: string
-	secondary: string
-	link: string
-	fr?: number
-}
-
-/** A picked entry, flattened with its group's shared fields. */
-export type SelfPromoPick = Omit<SelfPromoGroup, "entries"> & SelfPromoEntry
