@@ -68,9 +68,11 @@ export const DEFAULT_MUSIC_PRESETS: KosPresets = [
 ]
 
 // Built-in Music Content channel TITLE_KEYWORD presets, shipped enabled. User-uploaded mixes/playlists carry no domain or
-// category signal, so keywords are their only catch. "live" and bare "mix" stay excluded (too colliding); bare "cover" ships
-// again because the #7 \b word-boundary matcher removed its substring collisions ("discovery" no longer hits). JP uploads use
-// 音楽/カバー rather than their simplified-Chinese counterparts, so both ship alongside them (#22).
+// category signal, so keywords are their only catch. Bare "cover" ships because the #7 \b word-boundary matcher removed its
+// substring collisions ("discovery" no longer hits). JP uploads use 音楽/カバー rather than their simplified-Chinese
+// counterparts, so both ship alongside them (#22). #23 appends a curated trilingual batch (EN → JP → CN below the originals):
+// bare "mix" ships too now that boundaries make it safe, while risky candidates (live, audio, フル, …) stay excluded —
+// docs/music-keywords.md is the maintained curation record; this list implements it.
 export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "playlist", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "full album", enabled: true },
@@ -98,6 +100,51 @@ export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "串烧", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "混音", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "专辑", enabled: true },
+	// #23 trilingual expansion — EN: version-descriptor and format conventions.
+	{ type: "TITLE_KEYWORD", value: "official music video", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "lyric video", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "song", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "songs", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "unplugged", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "instrumental", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "karaoke", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "nightcore", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "slowed", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "sped up", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "medley", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "vocaloid", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "concert", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "m/v", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "mix", enabled: true },
+	// #23 JP: utattemita/odotteta/作業用BGM culture and category terms.
+	{ type: "TITLE_KEYWORD", value: "歌ってみた", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "弾いてみた", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "踊ってみた", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "作業用BGM", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "ボカロ", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "VOCALOID", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "ミュージック", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "歌詞", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "邦楽", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "洋楽", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "アニソン", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "メドレー", enabled: true },
+	// #23 CN: 翻唱/伴奏/金曲 ecosystem terms.
+	{ type: "TITLE_KEYWORD", value: "原创", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "单曲", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "新歌", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "热歌", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "金曲", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "歌曲", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "伴奏", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "原声", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "演奏", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "全曲", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "曲目", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "卡拉OK", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "KTV", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "音乐现场", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "歌回", enabled: true },
 ]
 
 export function getDefaultState(): State {
