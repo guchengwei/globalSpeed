@@ -38,6 +38,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Przypięte karty zachowują własne ustawienia zamiast współdzielić kontekst globalny",
 		"audioEffects": "Efekty dźwiękowe",

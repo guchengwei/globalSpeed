@@ -68,6 +68,12 @@ export type Gsm = {
 		/** Unmark live */
 		unmark: string
 	}
+	negative: {
+		/** Mark as normal video */
+		markAs: string
+		/** Unmark normal video */
+		unmark: string
+	}
 	header: {
 		/** Pinned tabs keep their own settings instead of sharing the global context */
 		pinTooltip: string

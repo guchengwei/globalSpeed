@@ -38,6 +38,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Các tab đã ghim giữ cài đặt riêng thay vì dùng chung ngữ cảnh toàn cầu",
 		"audioEffects": "Hiệu ứng âm thanh",

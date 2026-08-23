@@ -39,6 +39,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "Abas fixadas mantêm suas próprias configurações em vez de compartilhar o contexto global",
 		"audioEffects": "Efeitos de áudio",

@@ -39,6 +39,10 @@
 		"markAs": "标记为直播",
 		"unmark": "取消直播标记"
 	},
+	"negative": {
+		"markAs": "标记为普通视频",
+		"unmark": "取消普通标记"
+	},
 	"header": {
 		"pinTooltip": "固定的标签页保留独立设置，而非共享全局上下文",
 		"audioEffects": "音频效果",

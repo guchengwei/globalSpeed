@@ -69,6 +69,12 @@
 		"unmark": "Unmark live",
 		"!unmark": "Popup kebab action removing the current page's Live Stream mark (#24)"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"!markAs": "Popup kebab action marking the current page as negatively marked (#32): the enforced speed always applies, overriding every automatic classification; toggles to the unmark action while marked",
+		"unmark": "Unmark normal video",
+		"!unmark": "Popup kebab action removing the current page's negative mark (#32)"
+	},
 	"header": {
 		"pinTooltip": "Pinned tabs keep their own settings instead of sharing the global context",
 		"!pinTooltip": "Tooltip for the pin-tab button in the popup header. Also appended after the 'Pin by default' tooltip on the Options page, so it must read as a standalone statement about pinned tabs.",

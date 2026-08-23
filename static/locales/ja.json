@@ -38,6 +38,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "ピン留めされたタブは、グローバルコンテキストを共有せず、独自の設定を保持します",
 		"audioEffects": "オーディオエフェクト",

@@ -252,10 +252,14 @@ export function markExplicitOverride() {
 // but exempts nothing until that channel is enabled again.
 let manualMusicPages: MarkedPage[] = []
 let manualLivePages: MarkedPage[] = []
+// Negative marks (#32): pages where the user's mark FORCES non-exemption regardless of every positive
+// signal. Stored unconditionally like the others — it keeps overriding once channels re-enable.
+let manualNegativePages: MarkedPage[] = []
 
-export function setManualMarks(music?: MarkedPage[], live?: MarkedPage[]) {
+export function setManualMarks(music?: MarkedPage[], live?: MarkedPage[], negative?: MarkedPage[]) {
 	manualMusicPages = music ?? []
 	manualLivePages = live ?? []
+	manualNegativePages = negative ?? []
 }
 
 // Normalized current-page href, memoized on the raw string: steady-state passes pay one equality, and SPA
@@ -274,7 +278,8 @@ function currentNormalizedHref(): string {
 
 function matchesManualMark(label: MarkLabel): boolean {
 	const url = currentNormalizedHref()
-	return label === "music" ? manualMusicPages.some((m) => m.url === url) : manualLivePages.some((m) => m.url === url)
+	const list = label === "music" ? manualMusicPages : label === "live" ? manualLivePages : manualNegativePages
+	return list.some((m) => m.url === url)
 }
 
 // Corpus capture for a fresh mark (#24): snapshots this module's platform signals into a local-only entry,
@@ -305,8 +310,12 @@ export function buildMarkCorpusEntry(label: MarkLabel): MarkedCorpusEntry {
 // Ordered cheapest-first; the DOM query is memoized, keyword matching runs over the title/tag sources, and the Mix-context check
 // (string equality steady-state) closes the Music union. Manual marks sit INSIDE their channel's gate on purpose: they only fire
 // while that Detection Channel is enabled (see setManualMarks).
+// Negative marks (#32) precede the whole union: a matching page is never Exempt Media, so uploader-set categories, keyword hits
+// and positive manual marks cannot exempt it. It needs no channel gate of its own — forcing false while every channel is off is
+// a no-op, and it keeps overriding the moment a channel re-enables.
 // Deliberately side-effect-free so snapshot publishing can read it without disturbing edge/reset bookkeeping.
 function classifyExempt(elem: HTMLMediaElement): boolean {
+	if (matchesManualMark("negative")) return false
 	return (
 		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent() || matchesManualMark("live"))) ||
 		(musicChannelEnabled &&

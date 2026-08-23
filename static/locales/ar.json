@@ -37,6 +37,10 @@
 		"markAs": "Mark as live",
 		"unmark": "Unmark live"
 	},
+	"negative": {
+		"markAs": "Mark as normal video",
+		"unmark": "Unmark normal video"
+	},
 	"header": {
 		"pinTooltip": "علامات التبويب المثبتة تحتفظ بإعداداتها الخاصة بدلاً من مشاركة السياق العام",
 		"audioEffects": "مؤثرات صوتية",
