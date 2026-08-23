@@ -1,9 +1,9 @@
 {
 	"name": "__MSG_appName__",
-	"version": "3.4.118",
+	"version": "3.4.119",
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "{6abd70e7-3878-4141-8391-384c83f0717f}",
+			"id": "{3c61a9e4-ba6b-49c1-b98b-0829422e52f3}",
 			"strict_min_version": "128.0",
 			"data_collection_permissions": {
 				"required": ["none"]

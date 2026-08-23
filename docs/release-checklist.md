@@ -73,7 +73,7 @@ anything:
 
 1. Sign in to the [developer hub](https://addons.mozilla.org/developers/) and open the
    GlobalSpeed CE listing (first time: create it — the add-on name and ID are read from the
-   manifest; the ID is `{6abd70e7-3878-4141-8391-384c83f0717f}`).
+   manifest; the ID is `{3c61a9e4-ba6b-49c1-b98b-0829422e52f3}`).
 2. Upload `global-speed-firefox.zip` as a **new version** of the add-on.
 3. When the submission asks for source code, upload `source.zip`. This is required because the
    extension zip is minified: AMO's automated tools and reviewers need unminified sources to
@@ -138,7 +138,7 @@ these permissions.
 ### Fork relationship
 
 GlobalSpeed CE is an independently maintained, separately published fork of polywock/globalSpeed,
-rebranded under its own name and its own add-on ID ({6abd70e7-3878-4141-8391-384c83f0717f}) per our
+rebranded under its own name and its own add-on ID ({3c61a9e4-ba6b-49c1-b98b-0829422e52f3}) per our
 rebranding decision (ADR-0003). We make no redistribution claims beyond those granted by the
 project's license; ongoing fixes and additions are developed in our own repository.
 ```
