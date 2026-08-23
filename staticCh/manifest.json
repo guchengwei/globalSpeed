@@ -1,7 +1,7 @@
 {
 	"name": "__MSG_appName__",
 	"short_name": "GlobalSpeed CE",
-	"version": "3.4.125",
+	"version": "3.4.126",
 	"default_locale": "en",
 	"description": "__MSG_appDesc__",
 	"manifest_version": 3,
