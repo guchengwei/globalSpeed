@@ -43,3 +43,9 @@ _Avoid_: pinning, forcing
 **Negative Mark**:
 A page the user explicitly marked "normal video" from the popup; enforcement always applies to it, overriding every positive signal including Manual Marks. Mutually exclusive per URL with positive marks.
 _Avoid_: enforce mark, unmarking, blocklist
+
+### Scope notes
+
+**Picture-in-Picture**:
+Firefox's native PiP window is a chrome-privileged player hosting a frame-clone of the tab's `<video>` (privileged `cloneElementVisually`); no WebExtension script can run in it, and none needs to — the original element stays in the tracked document and keeps owning playback, so the window always mirrors the tab-side classification decision. On Chrome, media PiP never leaves the original document either. A speed anomaly inside a PiP window therefore indicates tab-side misclassification at entry: set `localStorage.gsKosTrace = "1"` on the page and reload to capture per-flip channel traces in the console.
+_Avoid_: PiP classifier, state hand-off
