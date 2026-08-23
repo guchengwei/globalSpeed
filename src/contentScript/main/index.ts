@@ -173,6 +173,7 @@ class StratumClient {
 	#serverName = `GS_SERVER_${this.#key}`
 	#clientName = `GS_CLIENT_${this.#key}`
 	#reportedCategory?: string
+	#selfCheck?: number
 
 	constructor() {
 		this.#parasite.id = "GS_PARASITE"
@@ -181,6 +182,7 @@ class StratumClient {
 		this.#parasite.dispatchEvent(new CustomEvent("GS_INIT", { detail: this.#key }))
 		this.#parasite.remove()
 		this.reportMediaCategory()
+		this.#startSelfCheck()
 	}
 	handle = (e: CustomEvent) => {
 		native.stopImmediatePropagation.call(e)
@@ -211,13 +213,26 @@ class StratumClient {
 		native.elementRemove.call(this.#parasite)
 		this.reportMediaCategory()
 	}
-	// YouTube-only best effort: surfaces the watch page's media category (ytInitialPlayerResponse) to the isolated world. Reads once per distinct value at document_start and again on wiggle time (covers late page scripts and SPA navigations); try/catch keeps it silent everywhere else. Forced probes (MEDIA_CATEGORY_REPROBE after media content change) bypass the #reportedCategory memo once and also report a now-category-less page as null, so the isolated world's stale "Music" clears on music→normal navigations.
+	// #25: MSE-based players swap SourceBuffers on SPA navigations, so emptied/loadedmetadata never fire and category freshness cannot ride element lifecycle. One 2s interval per instance re-reads the category for the document lifetime; reportMediaCategory's memo keeps unchanged values silent and reports a vanished category as null so stale values clear. Off YouTube the read resolves undefined forever, so the tick sends nothing. Cleared on pagehide/beforeunload (belt and braces; document teardown kills it anyway).
+	#startSelfCheck = () => {
+		if (this.#selfCheck !== undefined) return
+		this.#selfCheck = window.setInterval(this.reportMediaCategory, 2000)
+		const stop = () => {
+			if (this.#selfCheck === undefined) return
+			window.clearInterval(this.#selfCheck)
+			this.#selfCheck = undefined
+		}
+		document.addEventListener("pagehide", stop, { capture: true, once: true })
+		window.addEventListener("beforeunload", stop, { capture: true, once: true })
+	}
+	// YouTube-only best effort: surfaces the watch page's media category (ytInitialPlayerResponse) to the isolated world. Read once per distinct value at document_start, again on wiggle time (covers late page scripts), by forced probes (MEDIA_CATEGORY_REPROBE after media content change), and every 2s by the self-check heartbeat above — freshness never depends on element lifecycle. All paths memo-compare normalized values (string | undefined): unchanged values send nothing, and a category that disappeared reports null so the isolated world's stale "Music" clears on music→normal navigations. Try/catch keeps every read silent everywhere else.
 	reportMediaCategory = (force = false) => {
 		try {
 			const category = (window as any).ytInitialPlayerResponse?.microformat?.playerMicroformatRenderer?.category
-			if (!force && (typeof category !== "string" || category === this.#reportedCategory)) return
-			this.#reportedCategory = typeof category === "string" ? category : undefined
-			this.send({ type: "MEDIA_CATEGORY", value: typeof category === "string" ? category : null })
+			const next = typeof category === "string" ? category : undefined
+			if (!force && next === this.#reportedCategory) return
+			this.#reportedCategory = next
+			this.send({ type: "MEDIA_CATEGORY", value: next ?? null })
 		} catch (err) {}
 	}
 }
