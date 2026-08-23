@@ -39,6 +39,15 @@
 			"all_frames": true,
 			"match_about_blank": true,
 			"run_at": "document_start"
+		},
+		{
+			"matches": ["https://*/*", "http://*/*", "file://*/*"],
+			"exclude_matches": ["https://*.ubs.com/*"],
+			"js": ["main.js"],
+			"all_frames": true,
+			"match_about_blank": true,
+			"run_at": "document_start",
+			"world": "MAIN"
 		}
 	],
 	"options_ui": {
