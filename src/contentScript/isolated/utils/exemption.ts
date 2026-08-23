@@ -51,15 +51,24 @@ function youTubeLiveBadgePresent(): boolean {
 	return badgePresent
 }
 
+// Shared whole-domain boundary: exact equality or any deeper subdomain counts. One implementation for DOMAIN presets and per-platform source guards so the scope semantics can never drift apart.
+function hostMatchesDomain(hostname: string, domain: string): boolean {
+	return hostname === domain || hostname.endsWith(`.${domain}`)
+}
+
+function isYouTubeHost(hostname: string): boolean {
+	return hostMatchesDomain(hostname, "youtube.com")
+}
+
 // DOMAIN presets are whole-domain by design: exact hostname equality or any deeper subdomain counts. Deliberately not URLCondition parts — presets are platform-knowledge data evaluated against location.hostname, and the whole-domain scope is why twitch.tv (whose VODs must stay enforceable) is excluded from the seeds.
 function hostnameMatchesLivePreset(): boolean {
 	const hostname = location.hostname
-	return liveDomainPresets.some((entry) => entry.type === "DOMAIN" && (hostname === entry.value || hostname.endsWith(`.${entry.value}`)))
+	return liveDomainPresets.some((entry) => entry.type === "DOMAIN" && hostMatchesDomain(hostname, entry.value))
 }
 
 function hostnameMatchesMusicPreset(): boolean {
 	const hostname = location.hostname
-	return musicDomainPresets.some((entry) => entry.type === "DOMAIN" && (hostname === entry.value || hostname.endsWith(`.${entry.value}`)))
+	return musicDomainPresets.some((entry) => entry.type === "DOMAIN" && hostMatchesDomain(hostname, entry.value))
 }
 
 export function setKeepOriginalSpeedLive(enabled: boolean) {
@@ -113,7 +122,7 @@ let tagsJoined = ""
 
 // Whole-domain scope like the DOMAIN presets: the apex host or any deeper subdomain (www., m., …).
 function onPlayerHost(hostname: string): boolean {
-	return hostname === "youtube.com" || hostname.endsWith(".youtube.com") || hostname === "bilibili.com" || hostname.endsWith(".bilibili.com")
+	return isYouTubeHost(hostname) || hostMatchesDomain(hostname, "bilibili.com")
 }
 
 function extractPlatformTags(): string[] {
@@ -121,14 +130,14 @@ function extractPlatformTags(): string[] {
 		const hostname = location.hostname
 		// Guard before any querySelector: tag extraction only makes sense on pages plausibly hosting these players.
 		if (!onPlayerHost(hostname)) return []
-		if (hostname === "youtube.com" || hostname.endsWith(".youtube.com")) {
+		if (isYouTubeHost(hostname)) {
 			const keywords = document.querySelector<HTMLMetaElement>('meta[name="keywords"]')?.content ?? ""
 			return keywords
 				.split(",")
 				.map((tag) => tag.trim())
 				.filter(Boolean)
 		}
-		if (hostname === "bilibili.com" || hostname.endsWith(".bilibili.com")) {
+		if (hostMatchesDomain(hostname, "bilibili.com")) {
 			for (const selector of BILIBILI_TAG_SELECTORS) {
 				const tags = Array.from(document.querySelectorAll(selector))
 					.map((el) => el.textContent?.trim() || "")
@@ -158,27 +167,40 @@ function currentTagSource(): string {
 // Match sources consulted for TITLE_KEYWORD matching: the frame's document.title, the mediaSession metadata title when the page
 // publishes one (same source genMediaInfo.ts reads for MediaScope displayTitle; read defensively since support varies), and the
 // platform tag signals joined into one slot. A hit from any single source classifies as Exempt Media.
-const matchSources: string[] = ["", "", ""]
+// The mediaSession slot exists ONLY on YouTube hosts: the player republishes it across SPA navigations and iframe/embed frames
+// need it because document.title belongs to the parent page. Elsewhere the slot collapses away (sources = title + tags) and
+// navigator.mediaSession is never touched — some players (Bilibili) leave the metadata stale after SPA navigation, so re-reads
+// would keep matching the previous video's title forever (#20).
+let matchSources: string[] | null = null
 let docTitleRaw: string | null = null
 let mediaTitleRaw: string | null = null
 
 function currentMatchSources(): string[] {
+	// Host is constant per document, so the slot layout resolves once: [title, mediaSession, tags] on YouTube, [title, tags]
+	// elsewhere. Every returned slot is (re)written below before returning, so no empty placeholder can reach the matcher.
+	const onYouTube = isYouTubeHost(location.hostname)
+	matchSources ??= onYouTube ? ["", "", ""] : ["", ""]
+	const sources = matchSources
 	const docTitle = document.title ?? ""
-	let mediaTitle = ""
-	try {
-		mediaTitle = (navigator as any).mediaSession?.metadata?.title || ""
-	} catch {}
 	// Lowercase each source once per pass (only when its raw value actually changed) instead of once per keyword test.
 	if (docTitle !== docTitleRaw) {
 		docTitleRaw = docTitle
-		matchSources[0] = docTitle.toLowerCase()
+		sources[0] = docTitle.toLowerCase()
 	}
-	if (mediaTitle !== mediaTitleRaw) {
-		mediaTitleRaw = mediaTitle
-		matchSources[1] = mediaTitle.toLowerCase()
+	if (onYouTube) {
+		let mediaTitle = ""
+		try {
+			mediaTitle = (navigator as any).mediaSession?.metadata?.title || ""
+		} catch {}
+		if (mediaTitle !== mediaTitleRaw) {
+			mediaTitleRaw = mediaTitle
+			sources[1] = mediaTitle.toLowerCase()
+		}
+		sources[2] = currentTagSource()
+	} else {
+		sources[1] = currentTagSource()
 	}
-	matchSources[2] = currentTagSource()
-	return matchSources
+	return sources
 }
 
 function matchesMusicKeyword(): boolean {
