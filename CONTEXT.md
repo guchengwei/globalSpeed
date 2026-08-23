@@ -35,3 +35,7 @@ _Avoid_: MV, audio, song
 **Preset**:
 A built-in, editable bundle of classification data — domains and title keywords — shipped per Detection Channel and restorable to defaults.
 _Avoid_: whitelist, blocklist, template
+
+**Manual Mark**:
+A page the user explicitly labeled Music Content or Live Stream from the popup, overriding automatic classification for that page and feeding a local corpus for future keyword curation.
+_Avoid_: pinning, forcing
