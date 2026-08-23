@@ -491,10 +491,16 @@ export type Gsm = {
 			kosDomains: string
 			/** Title keywords */
 			kosTitleKeywords: string
-			/** Add a domain */
-			kosAddDomain: string
-			/** Add a keyword */
-			kosAddKeyword: string
+			/** active */
+			kosActive: string
+			/** off */
+			kosOff: string
+			/** # or // at line start = disabled · Cmd+/ toggles */
+			kosTextboxHint: string
+			/** # www.example.com */
+			kosExampleDomain: string
+			/** # acoustic cover */
+			kosExampleKeyword: string
 			/** Restore defaults */
 			kosRestoreDefaults: string
 			/** Keyword candidates from your marks */
