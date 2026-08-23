@@ -189,6 +189,13 @@ function matchesMusicKeyword(): boolean {
 	)
 }
 
+// Media-content-change invalidation, wired to the emptied/loadedmetadata lifecycle events: SPA players reuse one <video> across navigations, so nothing else tells these caches the CONTENT changed. Drops the raw-title compare keys so the next classification pass re-reads document.title and mediaSession metadata, and expires the tag TTL probe. Pure cache resets — no classification or rate-reset bookkeeping here (that edge lives solely in shouldSkipEnforcement), so event bursts cannot re-trigger the one-time reset.
+export function invalidateMatchSources() {
+	docTitleRaw = null
+	mediaTitleRaw = null
+	tagsCheckedAt = 0
+}
+
 export function setMusicCategory(category: string | null) {
 	mediaCategory = category
 }
