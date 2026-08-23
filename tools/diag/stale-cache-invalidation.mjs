@@ -1,4 +1,4 @@
-// Regression harness for #18: stale Keep Original Speed classification caches across SPA media reuse.
+// Regression harness for #18 (stale Keep Original Speed caches across SPA media reuse) and #20 (mediaSession title source goes stale across Bilibili SPA navs).
 //
 // Replication note (honest): this script REPLICATES the match-source machinery of
 // src/contentScript/isolated/utils/exemption.ts (keyword compilation, platform-tag TTL probe,
@@ -17,6 +17,13 @@
 // hygiene there, asserted as such. Each sequence asserts the pre-fix STALE outcome (red reproduced)
 // and the post-fix CLEAN outcome (green) against identical world evolution.
 //
+// Seq C (#20): the red leg rides a TRUE structural red against post-#18 code — Bilibili never
+// updates navigator.mediaSession.metadata.title across SPA navigations, so #18's invalidation
+// re-reads the SAME stale OST string forever and the switched-to video stays Exempt indefinitely.
+// The green leg gates the mediaSession slot behind a YouTube-host check: off YouTube the sources
+// shrink to title + tags, navigator.mediaSession is never touched, and the stale string cannot
+// reach the matcher.
+//
 // Debounce modeling: the shipped trigger is lodash.debounce(500, trailing) inside MediaTower; here
 // the trailing-edge contract is simulated by advancing the clock past the quiet window. Coalescing
 // (one bridge message per burst) is asserted explicitly.
@@ -32,6 +39,7 @@ function makeWorld() {
 		mediaSessionTitle: "",
 		tags: [],
 		pageCategory: undefined, // ytInitialPlayerResponse microformat category
+		mediaSessionReads: 0, // counts every navigator.mediaSession consultation (proof surface for #20)
 	}
 }
 
@@ -45,19 +53,24 @@ function compileKeywordMatcher(value) {
 	return { regex: new RegExp(`\\b${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`) }
 }
 
+function hostMatchesDomain(hostname, domain) {
+	return hostname === domain || hostname.endsWith(`.${domain}`)
+}
+
+function isYouTubeHost(hostname) {
+	return hostMatchesDomain(hostname, "youtube.com")
+}
+
 function onPlayerHost(hostname) {
-	return (
-		hostname === "youtube.com" ||
-		hostname.endsWith(".youtube.com") ||
-		hostname === "bilibili.com" ||
-		hostname.endsWith(".bilibili.com")
-	)
+	return isYouTubeHost(hostname) || hostMatchesDomain(hostname, "bilibili.com")
 }
 
 // Builds the classifier replica. `fixed` selects the shipped-at-HEAD wiring (no invalidation seam,
-// memo-gated-only category reporting); otherwise the #18 wiring is active. All other mechanics are
-// identical in both configurations — the delta below is exactly the shipped diff.
-function makeClassifier(world, clock, fixed) {
+// memo-gated-only category reporting); otherwise the #18 wiring is active. `msScoped` selects the
+// #20 mediaSession host gate; pre-#20 wiring reads the metadata title unconditionally on every host.
+// All other mechanics are identical in both configurations — each flag's delta below is exactly the
+// shipped diff.
+function makeClassifier(world, clock, fixed, msScoped) {
 	const musicKeywordMatchers = KEYWORD_VALUES.map(compileKeywordMatcher).filter((m) => m.regex || m.substring)
 	const musicDomainPresets = [] // no DOMAIN hits: keeps the sequence purely on category/keyword channels
 	const liveChannelEnabled = false
@@ -69,13 +82,15 @@ function makeClassifier(world, clock, fixed) {
 	let tagsCheckedAt = 0
 	let tagsRawKey = null
 	let tagsJoined = ""
-	const matchSources = ["", "", ""]
+	let matchSources = null // resolved lazily: 3 slots unconditional pre-#20, host-shaped after
 	let reportedCategory
 
 	function extractPlatformTags() {
-		// Verbatim guard shape; the meta[name=keywords]/DOM parsing itself is stood in by world.tags.
+		// Verbatim guard shape; the meta[name=keywords] parsing (YouTube) and the DOM tag-link
+		// querySelectors (Bilibili) are both stood in by world.tags.
 		if (!onPlayerHost(world.hostname)) return []
-		if (world.hostname === "youtube.com" || world.hostname.endsWith(".youtube.com")) return world.tags
+		if (isYouTubeHost(world.hostname)) return world.tags
+		if (hostMatchesDomain(world.hostname, "bilibili.com")) return world.tags
 		return []
 	}
 
@@ -94,17 +109,28 @@ function makeClassifier(world, clock, fixed) {
 	}
 
 	function currentMatchSources() {
+		// #20 wiring: host is constant per document, so the slot layout resolves once —
+		// [title, mediaSession, tags] on YouTube, [title, tags] elsewhere. Pre-#20: unconditional 3 slots.
+		const onYouTube = isYouTubeHost(world.hostname)
+		if (msScoped) matchSources ??= onYouTube ? ["", "", ""] : ["", ""]
+		else matchSources ??= ["", "", ""]
 		const docTitle = world.docTitle ?? ""
-		const mediaTitle = world.mediaSessionTitle || ""
 		if (docTitle !== docTitleRaw) {
 			docTitleRaw = docTitle
 			matchSources[0] = docTitle.toLowerCase()
 		}
-		if (mediaTitle !== mediaTitleRaw) {
-			mediaTitleRaw = mediaTitle
-			matchSources[1] = mediaTitle.toLowerCase()
+		if (!msScoped || onYouTube) {
+			// navigator.mediaSession consultation counter: every read of the metadata title counts.
+			world.mediaSessionReads++
+			const mediaTitle = world.mediaSessionTitle || ""
+			if (mediaTitle !== mediaTitleRaw) {
+				mediaTitleRaw = mediaTitle
+				matchSources[1] = mediaTitle.toLowerCase()
+			}
+			matchSources[2] = currentTagSource()
+		} else {
+			matchSources[1] = currentTagSource()
 		}
-		matchSources[2] = currentTagSource()
 		return matchSources
 	}
 
@@ -163,7 +189,18 @@ function makeClassifier(world, clock, fixed) {
 		return exempt && !explicitOverride
 	}
 
-	return { classifyExempt, invalidateMatchSources, reportMediaCategory, handleMediaCategoryMsg, shouldSkipEnforcement, stats, matchSources }
+	// matchSources is resolved lazily (shape depends on wiring/host), so expose the live array.
+	return {
+		classifyExempt,
+		invalidateMatchSources,
+		reportMediaCategory,
+		handleMediaCategoryMsg,
+		shouldSkipEnforcement,
+		stats,
+		get matchSources() {
+			return matchSources
+		},
+	}
 }
 
 let failed = 0
@@ -182,7 +219,8 @@ function seqA(fixed) {
 	const world = makeWorld()
 	let now = 10_000
 	const clock = () => now
-	const c = makeClassifier(world, clock, fixed)
+	// Pre-#18 eras predate #20's host gate; the shipped post-#18 classifier includes it.
+	const c = makeClassifier(world, clock, fixed, fixed)
 	const elem = { name: "reused <video>" }
 
 	// Music-category watch page; element wiggles ONCE here (mediaReferences dedups later plays).
@@ -240,7 +278,8 @@ function seqB(fixed) {
 	const world = makeWorld()
 	let now = 20_000
 	const clock = () => now
-	const c = makeClassifier(world, clock, fixed)
+	// Pre-#18 eras predate #20's host gate; the shipped post-#18 classifier includes it.
+	const c = makeClassifier(world, clock, fixed, fixed)
 	const elem = { name: "reused <video>" }
 
 	// Playlist page: keyword hits come from title + tags; no category involved.
@@ -280,6 +319,92 @@ function seqB(fixed) {
 
 	// Hygiene property: the raw-key reset forces the mediaSession slot back onto the CURRENT world value.
 	check(`[${label}] Seq B GREEN: mediaSession slot reflects current metadata`, c.matchSources[1], "top 10 kitchen mistakes")
+}
+
+// ---------------------------------------------------------------------------
+// Seq C (#20) — stale mediaSession title on a host that never refreshes it (Bilibili SPA navs).
+// The switched-to video's docTitle/tags are clean; navigator.mediaSession still carries the
+// previous MV's OST title. #18 invalidation re-reads it faithfully — and re-matches it. World
+// evolution is IDENTICAL for both legs; only the mediaSession wiring differs.
+// ---------------------------------------------------------------------------
+function seqC(msScoped) {
+	const label = msScoped ? "post-scope" : "pre-scope "
+	const world = makeWorld()
+	world.hostname = "www.bilibili.com"
+	let now = 40_000
+	const clock = () => now
+	const c = makeClassifier(world, clock, true, msScoped)
+	const elem = { name: "reused <video>" }
+
+	// Music MV page: exempt via keywords (title/tags/mediaSession all carry music signals).
+	world.docTitle = "【4K】经典金曲 MV 合集 高清修复"
+	world.tags = ["音乐", "MV"]
+	world.mediaSessionTitle = "「xxx」原声音乐集 Disc1-6"
+	now += 2000 // prime the tag probe with the music-page tags
+	c.shouldSkipEnforcement(elem)
+	check(`[${label}] Seq C MV page classifies exempt via keywords`, c.classifyExempt(), true)
+	c.shouldSkipEnforcement(elem)
+
+	// SPA navigation onto an unrelated game video. Bilibili swaps title/tags but NEVER updates
+	// mediaSession metadata — the OST string from the previous MV survives.
+	world.docTitle = "【火焰纹章：风花雪月】剧情CG 解说"
+	world.tags = ["火焰纹章", "风花雪月"]
+
+	// emptied + loadedmetadata fire, then the debounced trailing edge settles.
+	c.invalidateMatchSources()
+	c.invalidateMatchSources()
+	now += 50
+	now += DEBOUNCE_MS
+	c.invalidateMatchSources()
+	for (let i = 0; i < 3; i++) c.shouldSkipEnforcement(elem)
+
+	if (!msScoped) {
+		// Post-#18 wiring still reads mediaSession unconditionally: perfect invalidation of an
+		// unrefreshing source changes nothing. The bug reproduction:
+		check(`[${label}] Seq C RED: stale mediaSession keeps switched-to video exempt`, c.shouldSkipEnforcement(elem), true)
+		check(`[${label}] Seq C RED: mediaSession slot serves the previous MV's OST title`, c.matchSources[1].includes("音乐集"), true)
+		check(`[${label}] Seq C RED: classification never flips back (resets stuck at entry-only)`, c.stats.resets, 1)
+		check(`[${label}] Seq C RED: bilibili page consulted navigator.mediaSession`, world.mediaSessionReads > 0, true)
+		return
+	}
+
+	// #20 wiring: off YouTube the slot collapses away and the metadata is never consulted.
+	check(`[${label}] Seq C GREEN: switched-to video NOT exempt after invalidation`, c.shouldSkipEnforcement(elem), false)
+	check(
+		`[${label}] Seq C GREEN: mediaSession slot collapsed away off YouTube`,
+		c.matchSources.length === 2 && !c.matchSources.some((s) => s.includes("音乐集")),
+		true,
+	)
+	check(
+		`[${label}] Seq C GREEN: sources are exactly [docTitle, tags]`,
+		`${c.matchSources[0]} | ${c.matchSources[1]}`,
+		"【火焰纹章：风花雪月】剧情cg 解说 | 火焰纹章, 风花雪月",
+	)
+	check(`[${label}] Seq C GREEN: non-YT page NEVER touched navigator.mediaSession`, world.mediaSessionReads, 0)
+	check(`[${label}] Seq C GREEN: element flipped back to enforceable (one entry reset only)`, `${c.stats.resets}/${c.stats.flips}`, "1/2")
+
+	// YouTube-host behavior unchanged by #20: the slot stays present and fresh there (Seq B GREEN covers
+	// the slot's content; this pins its existence on a YT host).
+	const ytWorld = makeWorld()
+	ytWorld.hostname = "www.youtube.com"
+	ytWorld.docTitle = "Top 10 Kitchen Mistakes"
+	ytWorld.mediaSessionTitle = "Kitchen Mistakes OST"
+	const ytClassifier = makeClassifier(ytWorld, clock, true, true)
+	ytClassifier.classifyExempt()
+	check(
+		`[${label}] Seq C GREEN: YT host keeps all three slots (mediaSession present)`,
+		ytClassifier.matchSources.length === 3 && ytClassifier.matchSources[1],
+		"kitchen mistakes ost",
+	)
+}
+
+// Empty-slot semantics invariant (#20 review point): an empty source string can never match any
+// compiled matcher — substring needs a non-empty haystack hit, word-boundary regexes need a word
+// char. So even a slot that ever held "" could not conjure a keyword classification.
+function checkEmptySlotInvariant() {
+	const matchers = KEYWORD_VALUES.map(compileKeywordMatcher).filter((m) => m.regex || m.substring)
+	const noneMatchEmpty = matchers.every((m) => (m.substring ? !"".includes(m.substring) : !m.regex.test("")))
+	check("[invariant] empty-string source matches no compiled keyword matcher", noneMatchEmpty, true)
 }
 
 // ---------------------------------------------------------------------------
@@ -334,11 +459,14 @@ function seqBurst() {
 	check(`[burst] 8-event burst coalesces to one re-probe`, reprobes, 1)
 }
 
-console.log("== #18 stale-cache invalidation regression harness ==\n")
+console.log("== #18 stale-cache invalidation + #20 mediaSession scope regression harness ==\n")
 seqA(false)
 seqA(true)
 seqB(false)
 seqB(true)
+seqC(false)
+seqC(true)
+checkEmptySlotInvariant()
 seqBurst()
 console.log(failed === 0 ? "\nAll fixtures pass." : `\n${failed} fixture(s) FAILED.`)
 process.exit(failed === 0 ? 0 : 1)
