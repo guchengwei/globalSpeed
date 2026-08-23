@@ -68,7 +68,8 @@ export const DEFAULT_MUSIC_PRESETS: KosPresets = [
 ]
 
 // Built-in Music Content channel TITLE_KEYWORD presets, shipped enabled. User-uploaded mixes/playlists carry no domain or
-// category signal, so keywords are their only catch. "live", bare "mix" and bare "cover" are deliberately excluded (too colliding).
+// category signal, so keywords are their only catch. "live" and bare "mix" stay excluded (too colliding); bare "cover" ships
+// again because the #7 \b word-boundary matcher removed its substring collisions ("discovery" no longer hits).
 export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "playlist", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "full album", enabled: true },
@@ -83,6 +84,8 @@ export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "lyrics", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "official video", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "mv", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "music", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "cover", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "歌单", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "音乐", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "合集", enabled: true },
