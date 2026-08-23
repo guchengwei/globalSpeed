@@ -222,17 +222,37 @@ export function setMusicCategory(category: string | null) {
 	mediaCategory = category
 }
 
+// YouTube Mix context: radio queues are `list=RD…` by construction and music-only by product design, so their watch URLs alone
+// classify the current media as Music Content (#22). Only the exact "RD" prefix counts — PL/OL/UU and other list kinds carry no
+// such guarantee. Pure string ops over location.search, which SPA navigations rewrite without a reload; the raw search string
+// is the compare key so steady-state passes pay one string equality, re-parsing only when it actually changed.
+let mixSearchRaw: string | null = null
+let mixContextPresent = false
+
+function youTubeMixContextPresent(): boolean {
+	const search = location.search
+	if (search !== mixSearchRaw) {
+		mixSearchRaw = search
+		mixContextPresent = false
+		if (isYouTubeHost(location.hostname)) {
+			mixContextPresent = (new URLSearchParams(search).get("list") || "").startsWith("RD")
+		}
+	}
+	return mixContextPresent
+}
+
 export function markExplicitOverride() {
 	explicitOverride = true
 }
 
 // Pure per-element classification: independent channels OR-ed per their own toggles — any hit classifies the element as Exempt Media.
-// Ordered cheapest-first; the DOM query is memoized and keyword matching is last (regex work over the title/tag sources).
+// Ordered cheapest-first; the DOM query is memoized, keyword matching runs over the title/tag sources, and the Mix-context check
+// (string equality steady-state) closes the Music union.
 // Deliberately side-effect-free so snapshot publishing can read it without disturbing edge/reset bookkeeping.
 function classifyExempt(elem: HTMLMediaElement): boolean {
 	return (
 		(liveChannelEnabled && (elem.duration === Infinity || hostnameMatchesLivePreset() || youTubeLiveBadgePresent())) ||
-		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || matchesMusicKeyword()))
+		(musicChannelEnabled && (hostnameMatchesMusicPreset() || mediaCategory === "Music" || matchesMusicKeyword() || youTubeMixContextPresent()))
 	)
 }
 

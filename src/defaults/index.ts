@@ -69,7 +69,8 @@ export const DEFAULT_MUSIC_PRESETS: KosPresets = [
 
 // Built-in Music Content channel TITLE_KEYWORD presets, shipped enabled. User-uploaded mixes/playlists carry no domain or
 // category signal, so keywords are their only catch. "live" and bare "mix" stay excluded (too colliding); bare "cover" ships
-// again because the #7 \b word-boundary matcher removed its substring collisions ("discovery" no longer hits).
+// again because the #7 \b word-boundary matcher removed its substring collisions ("discovery" no longer hits). JP uploads use
+// 音楽/カバー rather than their simplified-Chinese counterparts, so both ship alongside them (#22).
 export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "playlist", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "full album", enabled: true },
@@ -88,9 +89,11 @@ export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "cover", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "歌单", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "音乐", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "音楽", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "合集", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "纯音乐", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "翻唱", enabled: true },
+	{ type: "TITLE_KEYWORD", value: "カバー", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "演唱会", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "串烧", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "混音", enabled: true },
