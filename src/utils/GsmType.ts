@@ -491,6 +491,12 @@ export type Gsm = {
 			kosAddKeyword: string
 			/** Restore defaults */
 			kosRestoreDefaults: string
+			/** Keyword candidates from your marks */
+			kosCorpusHeading: string
+			/** Mark at least two pages from the popup to see keyword suggestions. */
+			kosCorpusEmpty: string
+			/** Add */
+			kosCorpusAdd: string
 			/** Enable for local files */
 			localFiles: string
 			/** Lets the extension work on local files opened in the browser, such as video files on your device. Clicking opens the browser extension page, where file access can be allowed. */

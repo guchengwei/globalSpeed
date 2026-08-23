@@ -116,6 +116,8 @@ export const DEFAULT_MUSIC_KEYWORDS: KosPresets = [
 	{ type: "TITLE_KEYWORD", value: "concert", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "m/v", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "mix", enabled: true },
+	// #26 appends a franchise format: THE FIRST TAKE's one-take live sessions brand every title with it.
+	{ type: "TITLE_KEYWORD", value: "the first take", enabled: true },
 	// #23 JP: utattemita/odotteta/作業用BGM culture and category terms.
 	{ type: "TITLE_KEYWORD", value: "歌ってみた", enabled: true },
 	{ type: "TITLE_KEYWORD", value: "弾いてみた", enabled: true },
