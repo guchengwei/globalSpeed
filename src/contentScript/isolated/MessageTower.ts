@@ -34,8 +34,11 @@ export class MessageTower {
 	}
 	handleMessage: MessageCallback = (msg: Messages, sender, reply) => {
 		if (msg.type === "APPLY_MEDIA_EVENT") {
-			// A deliberate per-media action from the user pierces Exempt Media.
-			markExplicitOverride()
+			if (msg.event.type === "PLAYBACK_RATE") {
+				// A deliberate per-media SPEED change from the user pierces Exempt Media.
+				// Volume/seek/etc. must not: changing volume on Exempt Media stays exempt (#30).
+				markExplicitOverride()
+			}
 			realizeMediaEvent(msg.key, msg.event)
 			reply(true)
 			return
