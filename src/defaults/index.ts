@@ -53,6 +53,11 @@ export function generateUrlPart(origin: string): URLConditionPart {
 	}
 }
 
+// Stamp for the shipped KosPresets seeds below (#27): preset arrays stop tracking these literals once persisted, so
+// migrateSchema unions missing entries into stored lists when this outruns state.kosSeedsVersion. Bump by 1 whenever
+// any entry is added to DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_PRESETS or DEFAULT_MUSIC_KEYWORDS.
+export const KOS_SEEDS_VERSION = 1
+
 // Built-in Live Stream channel DOMAIN presets. Twitch is deliberately absent: presets are whole-domain, so it would also exempt VODs.
 export const DEFAULT_LIVE_PRESETS: KosPresets = [
 	{ type: "DOMAIN", value: "live.bilibili.com", enabled: true },
@@ -164,6 +169,7 @@ export function getDefaultState(): State {
 		keepOriginalSpeedLivePresets: DEFAULT_LIVE_PRESETS.map((entry) => ({ ...entry })),
 		keepOriginalSpeedMusicPresets: DEFAULT_MUSIC_PRESETS.map((entry) => ({ ...entry })),
 		keepOriginalSpeedMusicKeywords: DEFAULT_MUSIC_KEYWORDS.map((entry) => ({ ...entry })),
+		kosSeedsVersion: KOS_SEEDS_VERSION,
 	} satisfies State
 
 	return state

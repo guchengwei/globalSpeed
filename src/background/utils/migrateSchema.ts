@@ -1,6 +1,6 @@
 import { availableCommandNames } from "@/defaults/commands"
-import { getDefaultState } from "../../defaults"
-import { AdjustMode, Context, Duration, Keybind, State, Trigger, URLCondition, URLConditionPart, URLRule } from "../../types"
+import { DEFAULT_LIVE_PRESETS, DEFAULT_MUSIC_KEYWORDS, DEFAULT_MUSIC_PRESETS, getDefaultState, KOS_SEEDS_VERSION } from "../../defaults"
+import { AdjustMode, Context, Duration, Keybind, KosPresets, State, Trigger, URLCondition, URLConditionPart, URLRule } from "../../types"
 import { IS_FIREFOX_BUILD } from "../../utils/buildFlags"
 import { randomId } from "../../utils/helper"
 
@@ -48,12 +48,46 @@ export function migrateSchema(state?: State) {
 		return defaultState
 	}
 
+	state = propagateKosSeeds(state)
+
 	if (IS_FIREFOX_BUILD) {
 		state = migrateForFirefox(state)
 	} else {
 		state = migrateForChrome(state)
 	}
 
+	return state
+}
+
+/**
+ * Additive seed propagation (#27): once a preset array is persisted it no longer falls back to the shipped
+ * defaults, so later seed expansions would be invisible to that user. When state.kosSeedsVersion trails
+ * KOS_SEEDS_VERSION, every default entry missing from a stored list (matched by type+value, case-sensitively)
+ * is appended with the default's enabled flag, then the stamp advances. Absent keys keep their undefined→seed
+ * fallback and are never created. Disabled defaults and user-added entries are left as stored; removals of
+ * previously-shipped defaults resurface — accepted v1 tradeoff. Idempotent: stamped states skip the union,
+ * and re-applying it anyway adds nothing twice.
+ */
+function propagateKosSeeds(state: State) {
+	if ((state.kosSeedsVersion ?? 0) >= KOS_SEEDS_VERSION) return state
+
+	const channels: [keyof State, KosPresets][] = [
+		["keepOriginalSpeedLivePresets", DEFAULT_LIVE_PRESETS],
+		["keepOriginalSpeedMusicKeywords", DEFAULT_MUSIC_KEYWORDS],
+		["keepOriginalSpeedMusicPresets", DEFAULT_MUSIC_PRESETS],
+	]
+
+	channels.forEach(([key, seeds]) => {
+		const stored = state[key] as KosPresets | undefined
+		if (!Array.isArray(stored)) return
+
+		const known = new Set(stored.map((entry) => `${entry.type}:${entry.value}`))
+		seeds.forEach((seed) => {
+			if (!known.has(`${seed.type}:${seed.value}`)) stored.push({ ...seed })
+		})
+	})
+
+	state.kosSeedsVersion = KOS_SEEDS_VERSION
 	return state
 }
 
