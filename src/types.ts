@@ -76,6 +76,8 @@ export type State = {
 	keepOriginalSpeedMusic?: boolean
 	keepOriginalSpeedMusicPresets?: KosPresets
 	keepOriginalSpeedMusicKeywords?: KosPresets
+	/** Latest KOS_SEEDS_VERSION merged into the persisted preset arrays (#27); absent on states stored before it existed. */
+	kosSeedsVersion?: number
 	manualMarks?: ManualMarks
 	markCorpus?: MarkedCorpusEntry[]
 	rules?: URLRule[]
