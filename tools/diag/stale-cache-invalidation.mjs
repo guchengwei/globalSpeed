@@ -1,4 +1,4 @@
-// Regression harness for #18 (stale Keep Original Speed caches across SPA media reuse) and #20 (mediaSession title source goes stale across Bilibili SPA navs).
+// Regression harness for #18 (stale Keep Original Speed caches across SPA media reuse), #20 (mediaSession title source goes stale across Bilibili SPA navs), and #25 (category freshness decoupled from element lifecycle via a periodic self-check).
 //
 // Replication note (honest): this script REPLICATES the match-source machinery of
 // src/contentScript/isolated/utils/exemption.ts (keyword compilation, platform-tag TTL probe,
@@ -24,12 +24,23 @@
 // shrink to title + tags, navigator.mediaSession is never touched, and the stale string cannot
 // reach the matcher.
 //
+// Seq D (#25): the red leg rides a TRUE structural red against post-#18/#20 code — MSE-based YT
+// players swap SourceBuffers on SPA navs, so emptied/loadedmetadata never fire and NOTHING ever
+// re-reads the category after document_start: a category that appears or vanishes mid-document is
+// invisible forever (the TF-T chip-missing symptom). The green leg adds the shipped #25 wiring: a
+// 2s StratumClient self-check interval that runs the unforced read for the document lifetime.
+// Timer simulation: ticks fire at exact SELF_CHECK_MS spacing on virtual-clock advancement and call
+// reportMediaCategory() unforced; pre-#25 the driver is inert because no timer existed. The
+// unforced memo compares normalized values (string | undefined), so unchanged values send nothing
+// and →null clears; sends are counted at the bridge (handleMediaCategoryMsg) to prove exact-once.
+//
 // Debounce modeling: the shipped trigger is lodash.debounce(500, trailing) inside MediaTower; here
 // the trailing-edge contract is simulated by advancing the clock past the quiet window. Coalescing
 // (one bridge message per burst) is asserted explicitly.
 
 const DEBOUNCE_MS = 500
 const TAG_TTL_MS = 1000
+const SELF_CHECK_MS = 2000
 
 // World stands in for document / navigator / location / ytInitialPlayerResponse.
 function makeWorld() {
@@ -158,18 +169,20 @@ function makeClassifier(world, clock, fixed, msScoped) {
 		return musicChannelEnabled && (musicDomainPresets.some(() => false) || mediaCategory === "Music" || matchesMusicKeyword())
 	}
 
-	// MAIN-world reportMediaCategory. Pre-fix: string-only, memo-gated. Post-fix (#18): forced probes bypass the memo once and also report a now-category-less page as null.
+	// MAIN-world reportMediaCategory. Pre-fix: string-only, memo-gated. Post-fix (#18): forced probes bypass the memo once and also report a now-category-less page as null. Post-#25: every unforced path (document_start, wiggle, self-check tick) memo-compares normalized values (string | undefined), so unchanged values send nothing and →null clears stale categories.
 	function reportMediaCategory(force = false) {
 		if (!fixed && force) throw new Error("forced probes do not exist pre-fix")
 		const category = world.pageCategory
-		if (!force && (typeof category !== "string" || category === reportedCategory)) return false
+		const next = typeof category === "string" ? category : undefined
+		if (!force && next === reportedCategory) return false
 		// Sends MEDIA_CATEGORY over the bridge; the isolated side consumes it verbatim (bridge roundtrip collapsed):
-		handleMediaCategoryMsg(typeof category === "string" ? category : null)
+		handleMediaCategoryMsg(next)
 		return true
 	}
 
 	// Isolated-world ConfigSync.handleMediaCategoryMsg, verbatim.
 	function handleMediaCategoryMsg(value) {
+		stats.sends++ // one bridge message per report — the no-message-spam proof surface for #25
 		reportedCategory = typeof value === "string" ? value : undefined
 		setMusicCategory(value)
 	}
@@ -177,7 +190,7 @@ function makeClassifier(world, clock, fixed, msScoped) {
 	// shouldSkipEnforcement edge bookkeeping, verbatim shape (WeakMap → Map so tests can inspect size). Counts one-time native-rate resets on exempt entry.
 	const exemptElements = new Map()
 	let explicitOverride = false
-	const stats = { resets: 0, flips: 0 }
+	const stats = { resets: 0, flips: 0, sends: 0 }
 	function shouldSkipEnforcement(elem) {
 		const exempt = classifyExempt()
 		if ((exemptElements.get(elem) ?? false) !== exempt) {
@@ -398,6 +411,95 @@ function seqC(msScoped) {
 	)
 }
 
+// ---------------------------------------------------------------------------
+// Seq D (#25) — category freshness must NOT depend on element lifecycle events.
+// Simulated timeline: category ABSENT at construction, becomes "Music" at t1 with NO
+// emptied/loadedmetadata ever firing (MSE SourceBuffer swap — the modern YT SPA behavior), and
+// later flips to null. World evolution is IDENTICAL for both legs; only the #25 self-check timer
+// differs. Tick phases are kept boundary-aligned (all advances are half/multiples of the period),
+// so every "appears/vanishes" below lands just after a fired tick with a full period of headroom.
+// ---------------------------------------------------------------------------
+function seqD(timed) {
+	const label = timed ? "post-timer" : "pre-timer "
+	const world = makeWorld()
+	let now = 50_000
+	const clock = () => now
+	// Post-#18/#20 wiring in BOTH legs: invalidation and forced probes exist but ride element
+	// lifecycle events, and this timeline fires none. The only delta is the #25 heartbeat.
+	const c = makeClassifier(world, clock, true, true)
+	const elem = { name: "mse-reused <video>" }
+
+	// The shipped wiring: window.setInterval(reportMediaCategory, 2000) started at construction.
+	// Replica: ticks fire at exact SELF_CHECK_MS spacing during clock advancement and run the
+	// UNFORCED read. Pre-#25 the driver is inert — no timer existed.
+	let nextTickAt = now + SELF_CHECK_MS
+	function advance(delta) {
+		now += delta
+		if (!timed) return
+		while (now >= nextTickAt) {
+			c.reportMediaCategory()
+			nextTickAt += SELF_CHECK_MS
+		}
+	}
+
+	// Construction (document_start read): category absent → memo undefined === undefined → silent.
+	c.reportMediaCategory()
+	check(`[${label}] Seq D construction read on absent category sends nothing`, c.stats.sends, 0)
+
+	// Idle document: ticks run but the value never changes — inert, zero message spam.
+	advance(SELF_CHECK_MS * 2 + 1000)
+	check(`[${label}] Seq D idle ticks on unchanged absence send nothing`, c.stats.sends, 0)
+	check(`[${label}] Seq D absent category never classifies exempt`, c.classifyExempt(), false)
+	c.shouldSkipEnforcement(elem)
+
+	if (!timed) {
+		// Music appears mid-document with NO lifecycle events (the TF-T symptom: static HTML says
+		// "category":"Music", chip never shows).
+		world.pageCategory = "Music"
+		advance(SELF_CHECK_MS * 5) // five probe periods elapse; nothing ever re-reads the category
+		check(`[${label}] Seq D RED: Music live for 10s yet classification frozen non-exempt`, c.shouldSkipEnforcement(elem), false)
+		check(`[${label}] Seq D RED: zero bridge messages — nothing tracks the category`, c.stats.sends, 0)
+
+		// The later disappearance can't clear anything either: there was never a report to stale out.
+		world.pageCategory = undefined
+		advance(SELF_CHECK_MS * 3)
+		check(`[${label}] Seq D RED: still zero messages across both transitions`, c.stats.sends, 0)
+		return
+	}
+
+	// Music appears just after a fired tick — NO lifecycle events, one full period of headroom.
+	advance(SELF_CHECK_MS / 2)
+	world.pageCategory = "Music"
+	advance(SELF_CHECK_MS / 2)
+	check(`[${label}] Seq D GREEN: mid-probe, classification still pends the next tick`, c.classifyExempt(), false)
+	advance(SELF_CHECK_MS / 2)
+	check(`[${label}] Seq D GREEN: Music classified within one probe period`, c.classifyExempt(), true)
+	check(`[${label}] Seq D GREEN: appearance reported exactly once`, c.stats.sends, 1)
+	c.shouldSkipEnforcement(elem)
+	check(`[${label}] Seq D GREEN: exempt entry produced one native-rate reset`, c.stats.resets, 1)
+
+	// Steady state: several ticks over an unchanged value — silence.
+	advance(SELF_CHECK_MS * 4)
+	check(`[${label}] Seq D GREEN: four steady-state ticks send nothing further`, c.stats.sends, 1)
+
+	// Music → People & Blogs → Music, driven ONLY by ticks: each flip reports exactly once.
+	world.pageCategory = "People & Blogs"
+	advance(SELF_CHECK_MS)
+	check(`[${label}] Seq D GREEN: People & Blogs flip reported once and un-exempts`, `${c.stats.sends}/${c.classifyExempt()}`, "2/false")
+	c.shouldSkipEnforcement(elem)
+	world.pageCategory = "Music"
+	advance(SELF_CHECK_MS)
+	check(`[${label}] Seq D GREEN: flip back to Music reported once and re-exempts`, `${c.stats.sends}/${c.classifyExempt()}`, "3/true")
+	c.shouldSkipEnforcement(elem)
+	check(`[${label}] Seq D GREEN: each exempt re-entry reset native rate exactly once`, c.stats.resets, 2)
+
+	// Final flip to null: the stale Music classification clears within one probe period.
+	world.pageCategory = undefined
+	advance(SELF_CHECK_MS)
+	check(`[${label}] Seq D GREEN: →null clears the stale category at the tick`, c.classifyExempt(), false)
+	check(`[${label}] Seq D GREEN: clearing reported exactly once`, c.stats.sends, 4)
+}
+
 // Empty-slot semantics invariant (#20 review point): an empty source string can never match any
 // compiled matcher — substring needs a non-empty haystack hit, word-boundary regexes need a word
 // char. So even a slot that ever held "" could not conjure a keyword classification.
@@ -459,13 +561,15 @@ function seqBurst() {
 	check(`[burst] 8-event burst coalesces to one re-probe`, reprobes, 1)
 }
 
-console.log("== #18 stale-cache invalidation + #20 mediaSession scope regression harness ==\n")
+console.log("== #18 stale-cache invalidation + #20 mediaSession scope + #25 category self-check regression harness ==\n")
 seqA(false)
 seqA(true)
 seqB(false)
 seqB(true)
 seqC(false)
 seqC(true)
+seqD(false)
+seqD(true)
 checkEmptySlotInvariant()
 seqBurst()
 console.log(failed === 0 ? "\nAll fixtures pass." : `\n${failed} fixture(s) FAILED.`)
