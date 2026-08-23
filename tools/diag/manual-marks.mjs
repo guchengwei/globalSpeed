@@ -13,6 +13,12 @@
 //   - Bilibili /video/BV… and every other page carry their identity in origin+pathname (hash/search gone).
 //   - Weird input must never throw — the fallback is a crude query/hash cut of the raw string.
 //   - Mark match = exact equality of normalized URLs, per channel, lists independent.
+//
+// #30 adds a second replicated decision: whether an incoming message produces an Explicit Override
+// mark in MessageTower.handleMessage. Verbatim replication of the gate `msg.type === "APPLY_MEDIA_EVENT" &&
+// msg.event.type === "PLAYBACK_RATE"` — same honest caveat as above, keep in sync with the source.
+// The MediaEvent union (applyMediaEvent.ts) was enumerated for #30; PLAYBACK_RATE is its ONLY
+// rate-altering member (SetPlaybackRate.set), so it alone may pierce Exempt Media.
 
 function normalizePageUrl(url) {
 	try {
@@ -31,6 +37,12 @@ function normalizePageUrl(url) {
 function matchesManualMark(marks, label, href) {
 	const url = normalizePageUrl(href)
 	return (label === "music" ? marks.music : marks.live).some((m) => m.url === url)
+}
+
+// Replicated verbatim from src/contentScript/isolated/MessageTower.ts handleMessage (#30):
+// the APPLY_MEDIA_EVENT branch marks Explicit Override only for speed-affecting events.
+function marksExplicitOverride(msg) {
+	return msg.type === "APPLY_MEDIA_EVENT" && msg.event.type === "PLAYBACK_RATE"
 }
 
 let failed = 0
@@ -106,6 +118,40 @@ check("live channel list is independent of music list", matchesManualMark(marks,
 check("marked live page matches its own list", matchesManualMark(marks, "live", "https://live.bilibili.com/1234?extra=junk"), true)
 const emptyMarks = { music: [], live: [] }
 check("empty mark lists never match", matchesManualMark(emptyMarks, "music", "https://www.youtube.com/watch?v=abc123"), false)
+
+console.log("\n-- Explicit Override marking (#30): only speed-affecting APPLY_MEDIA_EVENTs pierce Exempt Media --")
+// Representative shape of every MediaEvent union member (applyMediaEvent.ts), so the enumeration
+// stays pinned: exactly one of these may mark.
+const mediaEventShapes = {
+	PLAYBACK_RATE: { type: "PLAYBACK_RATE", value: 2, freePitch: false },
+	SEEK: { type: "SEEK", value: 5, relative: true },
+	PAUSE: { type: "PAUSE", state: "toggle" },
+	MUTE: { type: "MUTE", state: "on" },
+	SET_VOLUME: { type: "SET_VOLUME", value: 0.1, relative: true },
+	SET_MARK: { type: "SET_MARK", key: "intro" },
+	SEEK_MARK: { type: "SEEK_MARK", key: "intro" },
+	TOGGLE_LOOP: { type: "TOGGLE_LOOP", key: "intro" },
+	PIP: { type: "PIP", state: "toggle" },
+	FULLSCREEN: { type: "FULLSCREEN", direct: true },
+	MEDIA_INFO: { type: "MEDIA_INFO" },
+	CINEMA: { type: "CINEMA", init: {} },
+	LOOP_ENTIRE: { type: "LOOP_ENTIRE", key: "k", state: "toggle" },
+}
+check(
+	"SET_VOLUME-shaped APPLY_MEDIA_EVENT does NOT mark",
+	marksExplicitOverride({ type: "APPLY_MEDIA_EVENT", key: "", event: mediaEventShapes.SET_VOLUME }),
+	false,
+)
+check(
+	"PLAYBACK_RATE-shaped APPLY_MEDIA_EVENT DOES mark",
+	marksExplicitOverride({ type: "APPLY_MEDIA_EVENT", key: "", event: mediaEventShapes.PLAYBACK_RATE }),
+	true,
+)
+for (const [type, event] of Object.entries(mediaEventShapes)) {
+	if (type === "PLAYBACK_RATE") continue
+	check(`${type}-shaped APPLY_MEDIA_EVENT does NOT mark`, marksExplicitOverride({ type: "APPLY_MEDIA_EVENT", key: "", event }), false)
+}
+check("non-media message types never mark via this gate", marksExplicitOverride({ type: "SET_TEMPORARY_SPEED", factor: 2 }), false)
 
 console.log(failed === 0 ? "\nAll fixtures pass." : `\n${failed} fixture(s) FAILED.`)
 process.exit(failed === 0 ? 0 : 1)
