@@ -9,5 +9,4 @@ z.md
 private/
 .agents/
 .claude/
-tools/localeTools/*
 AGENTS.md
