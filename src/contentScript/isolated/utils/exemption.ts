@@ -26,17 +26,27 @@ const exemptElements = new WeakMap<HTMLMediaElement, boolean>()
 // Explicit Override: set by deliberate user speed actions (popup, shortcuts, hold-to-speed). It pierces the Exempt Media skip until a classification flip or document unload. In-memory only.
 let explicitOverride = false
 
-// YouTube live badge as a second Live signal (catches lives whose duration heuristic misses). Presence is memoized for a second so the per-element pass never hammers querySelector.
+// YouTube live badge as a second Live signal (catches lives whose duration heuristic misses). Only a RENDERED badge counts: YouTube keeps `.ytp-live-badge` in the DOM even on regular videos and merely hides it there, so existence would exempt everything; a DVR-scrubbed live still shows the badge and stays exempt. Rendered-visibility decision is memoized for a second so the per-element pass never hammers querySelector.
 const LIVE_BADGE_SELECTOR = ".ytp-live-badge"
 const LIVE_BADGE_TTL_MS = 1000
 let badgeCheckedAt = 0
 let badgePresent = false
 
+// Pure decision seam over badge visibility: a null lookup and any element the resolver says does not render both answer "not live". Kept side-effect-free so the standalone regression harness can drive it without a real document.
+export function badgeCountsAsLive(el: Element | null, rendersVisible: (el: Element) => boolean): boolean {
+	return el !== null && rendersVisible(el)
+}
+
+// Default resolver: getClientRects() is empty exactly when the element renders no boxes (display:none subtree or detached).
+export function defaultRendersVisible(el: Element): boolean {
+	return el.getClientRects().length > 0
+}
+
 function youTubeLiveBadgePresent(): boolean {
 	const now = Date.now()
 	if (now - badgeCheckedAt >= LIVE_BADGE_TTL_MS) {
 		badgeCheckedAt = now
-		badgePresent = !!document.querySelector(LIVE_BADGE_SELECTOR)
+		badgePresent = badgeCountsAsLive(document.querySelector(LIVE_BADGE_SELECTOR), defaultRendersVisible)
 	}
 	return badgePresent
 }
