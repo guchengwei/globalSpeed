@@ -67,10 +67,28 @@ Copy into the AMO version's Review Notes field and fill the blanks:
 ```markdown
 ### What this extension does
 
-GlobalSpeed CE is a universal playback-speed controller for video and audio. It applies a chosen
-speed to all media on a page, supports URL rules that auto-apply saved speeds on specific sites,
-provides hotkeys for speed/rewind/volume control, and offers audio filters and effects. Users
-interact with it via the toolbar popup, options page, and keyboard shortcuts.
+GlobalSpeed CE is a universal playback-speed controller for video and audio, based on the upstream
+project "Global Speed" (polywock/globalSpeed). It applies a chosen speed to all media on a page,
+supports URL rules that auto-apply saved speeds on specific sites, provides hotkeys for
+speed/rewind/volume control, and offers audio filters and effects. Users interact with it via the
+toolbar popup, options page, and keyboard shortcuts.
+
+### What this fork adds
+
+This fork's functional delta is the **Keep Original Speed** feature set: media detected as a live
+stream or music content plays at its natural rate instead of the enforced speed, while deliberate
+user speed actions still apply to such media.
+
+- Detection runs entirely locally — **no network requests** are made to any API. Signals come only
+  from the page the user already opened: the element's duration, YouTube's on-page live badge,
+  YouTube's page-declared category (read once from `ytInitialPlayerResponse` in page context),
+  YouTube `<meta name="keywords">`, Bilibili tag elements in the DOM, and user-editable domain /
+  title-keyword lists stored in local extension settings.
+- Exempt media keeps its native rate; user-initiated speed changes pierce this until the media's
+  classification changes or the page unloads.
+- Options-page editors manage the domain/keyword lists (with restore-to-defaults); the popup shows
+  a badge reflecting the current state.
+- The add-on publishes under its own name and add-on ID — see "Fork relationship" below.
 
 ### Why a source bundle is attached
 
