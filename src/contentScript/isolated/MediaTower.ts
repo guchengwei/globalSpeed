@@ -5,7 +5,7 @@ import { getShadow } from "@/utils/nativeUtils"
 import { conformSpeed } from "../../utils/configUtils"
 import { assertType, between, randomId } from "../../utils/helper"
 import { applyMediaEvent, MediaEvent, resetRateLimit } from "./utils/applyMediaEvent"
-import { shouldSkipEnforcement } from "./utils/exemption"
+import { invalidateMatchSources, shouldSkipEnforcement } from "./utils/exemption"
 import { generateScopeState } from "./utils/genMediaInfo"
 
 const EVENTS_LAST_PLAYED = new Set(["pause", "playing", "timeupdate"])
@@ -191,8 +191,22 @@ export class MediaTower {
 		if (gvar.os.circle && (e.type === "playing" || e.type === "loadedmetadata") && elem instanceof HTMLVideoElement) {
 			this.reobserve(elem)
 		}
+
+		// Content change: SPA players reuse one <video> element across navigations, so these lifecycle events are the only reliable signal that what is playing changed. Refresh match-source caches immediately (cheap resets) and schedule one debounced category re-probe per burst.
+		if (e.type === "emptied" || e.type === "loadedmetadata") this.handleContentChange()
 	}
 	private handleMediaEventDeb = debounce(this.handleMediaEvent, 5000, { leading: true, trailing: true, maxWait: 5000 })
+	// One forced category re-probe per content-change burst: coalesces emptied/loadedmetadata pairs (and site spam) into a single bridge message ~500ms after the burst settles. Re-invalidates first so a title/mediaSession/tag mutation that landed after the event still reads fresh.
+	private sendMediaCategoryReprobe = () => {
+		invalidateMatchSources()
+		if (!gvar.os.stratumServer?.initialized) return
+		gvar.os.stratumServer.send({ type: "MEDIA_CATEGORY_REPROBE" })
+	}
+	private reprobeMediaCategoryDeb = debounce(this.sendMediaCategoryReprobe, 500)
+	private handleContentChange = () => {
+		invalidateMatchSources()
+		this.reprobeMediaCategoryDeb()
+	}
 	sendUpdate = () => {
 		if (!chrome.runtime?.id) return gvar.os.handleOrphan()
 		if (!gvar.tabInfo) return

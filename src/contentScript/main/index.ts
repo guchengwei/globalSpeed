@@ -195,6 +195,8 @@ class StratumClient {
 			seekNetflix(data.value)
 		} else if (data.type === "GHOST") {
 			data.off ? ghostMode.deactivate() : ghostMode.activate()
+		} else if (data.type === "MEDIA_CATEGORY_REPROBE") {
+			this.reportMediaCategory(true)
 		}
 	}
 	send = (data: any) => {
@@ -209,13 +211,13 @@ class StratumClient {
 		native.elementRemove.call(this.#parasite)
 		this.reportMediaCategory()
 	}
-	// YouTube-only best effort: surfaces the watch page's media category (ytInitialPlayerResponse) to the isolated world. Reads once per distinct value at document_start and again on wiggle time (covers late page scripts and SPA navigations); try/catch keeps it silent everywhere else.
-	reportMediaCategory = () => {
+	// YouTube-only best effort: surfaces the watch page's media category (ytInitialPlayerResponse) to the isolated world. Reads once per distinct value at document_start and again on wiggle time (covers late page scripts and SPA navigations); try/catch keeps it silent everywhere else. Forced probes (MEDIA_CATEGORY_REPROBE after media content change) bypass the #reportedCategory memo once and also report a now-category-less page as null, so the isolated world's stale "Music" clears on music→normal navigations.
+	reportMediaCategory = (force = false) => {
 		try {
 			const category = (window as any).ytInitialPlayerResponse?.microformat?.playerMicroformatRenderer?.category
-			if (typeof category !== "string" || category === this.#reportedCategory) return
-			this.#reportedCategory = category
-			this.send({ type: "MEDIA_CATEGORY", value: category })
+			if (!force && (typeof category !== "string" || category === this.#reportedCategory)) return
+			this.#reportedCategory = typeof category === "string" ? category : undefined
+			this.send({ type: "MEDIA_CATEGORY", value: typeof category === "string" ? category : null })
 		} catch (err) {}
 	}
 }
