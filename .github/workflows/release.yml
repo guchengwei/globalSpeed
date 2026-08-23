@@ -26,6 +26,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify manifest version parity
+        run: |
+          set -euo pipefail
+          ch_version=$(node -p "require('./staticCh/manifest.json').version")
+          ff_version=$(node -p "require('./staticFf/manifest.json').version")
+          if [ "${ch_version}" != "${ff_version}" ]; then
+            echo "::error::Version mismatch: staticCh/manifest.json version '${ch_version}' differs from staticFf/manifest.json version '${ff_version}'."
+            exit 1
+          fi
+          echo "Manifest versions in parity: ${ch_version}"
+
       - name: Build Chromium extension
         run: npm run prod
 
