@@ -62,6 +62,8 @@
 		"max": "Maksimum",
 		"on": "Włącz",
 		"off": "Wyłącz",
+		"enableAll": "Włącz wszystkie",
+		"disableAll": "Wyłącz wszystkie",
 		"toggle": "Przełącz",
 		"video": "Wideo",
 		"page": "Strona",

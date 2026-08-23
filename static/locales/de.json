@@ -62,6 +62,8 @@
 		"max": "Maximum",
 		"on": "Einschalten",
 		"off": "Ausschalten",
+		"enableAll": "Alle einschalten",
+		"disableAll": "Alle ausschalten",
 		"toggle": "Umschalten",
 		"video": "Video",
 		"page": "Seite",

@@ -62,6 +62,8 @@
 		"max": "Maksimum",
 		"on": "Nyalakan",
 		"off": "Matikan",
+		"enableAll": "Nyalakan semua",
+		"disableAll": "Matikan semua",
 		"toggle": "Alihkan",
 		"video": "Video",
 		"page": "Halaman",

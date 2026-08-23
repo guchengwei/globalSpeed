@@ -62,6 +62,8 @@
 		"max": "Tối đa",
 		"on": "Bật",
 		"off": "Tắt",
+		"enableAll": "Bật tất cả",
+		"disableAll": "Tắt tất cả",
 		"toggle": "Chuyển đổi",
 		"video": "Video",
 		"page": "Trang",

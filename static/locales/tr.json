@@ -63,6 +63,8 @@
 		"max": "Maksimum",
 		"on": "Aç",
 		"off": "Kapat",
+		"enableAll": "Tümünü aç",
+		"disableAll": "Tümünü kapat",
 		"toggle": "Geçiş",
 		"video": "Video",
 		"page": "Sayfa",

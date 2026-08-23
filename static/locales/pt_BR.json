@@ -63,6 +63,8 @@
 		"max": "Máximo",
 		"on": "Ativar",
 		"off": "Desativar",
+		"enableAll": "Ativar tudo",
+		"disableAll": "Desativar tudo",
 		"toggle": "Alternar",
 		"video": "Vídeo",
 		"page": "Página",

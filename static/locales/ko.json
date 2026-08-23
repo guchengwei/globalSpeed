@@ -62,6 +62,8 @@
 		"max": "최대",
 		"on": "켜기",
 		"off": "끄기",
+		"enableAll": "모두 켜기",
+		"disableAll": "모두 끄기",
 		"toggle": "토글",
 		"video": "동영상",
 		"page": "페이지",

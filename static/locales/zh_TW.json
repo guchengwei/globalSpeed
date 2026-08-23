@@ -62,6 +62,8 @@
 		"max": "最大",
 		"on": "開啟",
 		"off": "關閉",
+		"enableAll": "全部開啟",
+		"disableAll": "全部關閉",
 		"toggle": "切換",
 		"video": "影片",
 		"page": "頁面",

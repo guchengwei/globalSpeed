@@ -63,6 +63,8 @@
 		"max": "最大",
 		"on": "开启",
 		"off": "关闭",
+		"enableAll": "全部开启",
+		"disableAll": "全部关闭",
 		"toggle": "切换",
 		"video": "视频",
 		"page": "页面",

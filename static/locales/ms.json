@@ -62,6 +62,8 @@
 		"max": "Maksimum",
 		"on": "Hidupkan",
 		"off": "Matikan",
+		"enableAll": "Hidupkan semua",
+		"disableAll": "Matikan semua",
 		"toggle": "Togol",
 		"video": "Video",
 		"page": "Halaman",

@@ -93,10 +93,25 @@ function KeybindSection(props: {
 	const listRef = useRef<HTMLDivElement>(null)
 	const keybinds = view[listKey] || []
 	const hasJs = keybinds.some((kb) => kb.enabled && kb.command === "runCode")
+	const allEnabled = keybinds.length > 0 && keybinds.every((kb) => kb.enabled)
 
 	return (
 		<OptionsSection>
-			<h2>{getSectionTitle(listKey)}</h2>
+			<div className="flex items-center justify-between">
+				<h2 className="mt-0">{getSectionTitle(listKey)}</h2>
+				{keybinds.length > 0 && (
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => {
+							setView({ [listKey]: keybinds.map((kb) => ({ ...kb, enabled: !allEnabled })) } as StateView)
+							if (listKey === "menuKeybinds") requestSyncContextMenu()
+						}}
+					>
+						{allEnabled ? gvar.gsm.token.disableAll : gvar.gsm.token.enableAll}
+					</Button>
+				)}
+			</div>
 			{!!getSectionSubheader(listKey) && <div className="-mt-2.5 mb-2.5 text-xl italic opacity-50">{getSectionSubheader(listKey)}</div>}
 			{listKey === "pageKeybinds" && <ShortcutWarning isBlockMode={(view.keybindsUrlCondition || getDefaultURLCondition(true)).block} />}
 			{devWarningType ? <DevWarning warningType={hasJs ? devWarningType : DevWarningType.NONE} /> : null}

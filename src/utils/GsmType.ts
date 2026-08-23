@@ -111,6 +111,10 @@ export type Gsm = {
 		on: string
 		/** Turn off */
 		off: string
+		/** Enable all */
+		enableAll: string
+		/** Disable all */
+		disableAll: string
 		/** Toggle */
 		toggle: string
 		/** Video */
