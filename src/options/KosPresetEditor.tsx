@@ -247,8 +247,8 @@ export function KosCorpusCandidates(props: { view: StateView; setView: SetView }
 					<div className="mt-3.75">
 						{candidates.map((candidate) => (
 							<div key={candidate.value} className="mb-2 grid grid-cols-[max-content_1fr_max-content] items-center gap-x-2">
-								<span className="text-sm tabular-nums opacity-50" title={candidate.docFreq.toString()}>
-									{candidate.docFreq}
+								<span className="text-sm tabular-nums opacity-50" title={candidate.score.toString()}>
+									{candidate.score}
 								</span>
 								<span className="break-all">{candidate.value}</span>
 								<Button aria-label={`${gvar.gsm.options.flags.kosCorpusAdd} ${candidate.value}`} onClick={() => add(candidate)}>
