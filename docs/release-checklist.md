@@ -17,33 +17,34 @@ the artifacts; this checklist covers everything a person must do, top to bottom.
 
 ## 2. Cut the release
 
-1. Bump `version` in **both** [`staticCh/manifest.json`](../staticCh/manifest.json) and
-   [`staticFf/manifest.json`](../staticFf/manifest.json) to the same next `3.4.x` value. They must
-   match each other and the tag. CI derives the release title from `staticCh`'s version and warns
-   when the pushed tag doesn't match it — but nothing cross-checks `staticFf`, so verify manually.
-2. Commit the bump, then tag and push:
+1. Merge the PR into `master`. The workflow verifies that both manifests have the same
+   version. If that version is already tagged, it bumps both manifests to the next patch version,
+   commits the bump, and creates the new tag. If the PR already contains an unused version bump,
+   CI tags that version instead.
+   - For a manual release, bump `version` in **both** [`staticCh/manifest.json`](../staticCh/manifest.json)
+     and [`staticFf/manifest.json`](../staticFf/manifest.json), then push the matching tag:
 
-   ```sh
-   git tag vX.Y.Z && git push origin master vX.Y.Z
-   ```
+     ```sh
+     git tag vX.Y.Z && git push origin master vX.Y.Z
+     ```
 
-3. Watch the **Release** workflow run in the Actions tab. It builds both zips plus the source
+2. Watch the **Release** workflow run in the Actions tab. It builds both zips plus the source
    bundle, gates on `web-ext lint`, and attaches the artifacts to a **draft** GitHub Release.
    - To dry-run the pipeline without tagging, trigger **Release** via _Run workflow_
      (`workflow_dispatch`) on any branch.
-4. When the workflow is green, open Releases and confirm the draft exists, titled
+3. When the workflow is green, open Releases and confirm the draft exists, titled
    **GlobalSpeed CE vX.Y.Z**, with exactly three artifacts attached:
    - `global-speed-chromium.zip`
    - `global-speed-firefox.zip`
    - `source.zip`
-5. Check the `web-ext lint` gate output. Expected baseline: **0 errors, ~8 warnings**, all
+4. Check the `web-ext lint` gate output. Expected baseline: **0 errors, ~8 warnings**, all
    upstream-inherited:
    - 2 × `data_collection_permissions` key vs. `strict_min_version: "128"` (key needs Gecko 128+;
      our minimum is exactly 128, so this is fine).
    - 6 × Chrome-only API references in code shared with the Chromium build.
    - Worry (stop and investigate) if: any **error** appears; the warning count jumps; or warnings
      name files/patterns you don't recognize as inherited shared code.
-6. Review the draft, then publish it so the artifacts are publicly downloadable alongside the AMO
+5. Review the draft, then publish it so the artifacts are publicly downloadable alongside the AMO
    listing.
 
 ## 3. Submit to AMO

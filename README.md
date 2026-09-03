@@ -73,7 +73,9 @@ Production zips: `npm run prod`, `npm run prodFf`. Firefox-specific build notes 
 
 ## Releasing
 
-1. Push a tag to cut a release: `git tag vX.Y.Z && git push origin vX.Y.Z`
+1. Merge a PR into `master` to trigger CI. The workflow checks manifest parity, bumps both
+   manifests to the next unused patch version when needed, commits that bump, and creates the
+   matching `vX.Y.Z` tag. Manually pushed versioned tags remain supported.
 2. CI ([`.github/workflows/release.yml`](.github/workflows/release.yml)) builds the Chromium zip,
    Firefox zip, and AMO source zip, gates on `web-ext lint`, then attaches all three to a
    **draft** GitHub Release.

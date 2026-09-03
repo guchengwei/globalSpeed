@@ -3,7 +3,14 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  pull_request:
+    types: [closed]
+    branches: [master]
   workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -11,11 +18,90 @@ permissions:
 jobs:
   release:
     name: Build, lint, and publish draft release
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: >-
+            ${{ github.event.pull_request.merge_commit_sha || github.ref }}
+          fetch-depth: 0
+
+      - name: Prepare merged release
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.merged == true
+        run: |
+          set -euo pipefail
+          git fetch origin master --tags
+          git checkout --force -B master origin/master
+          ch_version=$(
+            node -p "require('./staticCh/manifest.json').version"
+          )
+          ff_version=$(
+            node -p "require('./staticFf/manifest.json').version"
+          )
+          if [ "${ch_version}" != "${ff_version}" ]; then
+            echo "::error::Manifest versions do not match."
+            exit 1
+          fi
+
+          head_sha=$(git rev-parse HEAD)
+          release_tag="v${ch_version}"
+          while git show-ref --tags --verify --quiet \
+            "refs/tags/${release_tag}"
+          do
+            tag_sha=$(git rev-list -n 1 "refs/tags/${release_tag}")
+            if [ "${tag_sha}" = "${head_sha}" ]; then
+              break
+            fi
+            IFS=. read -r major minor patch <<< "${ch_version}"
+            next_version="${major}.${minor}.$((patch + 1))"
+            for manifest in \
+              staticCh/manifest.json staticFf/manifest.json
+            do
+              node --input-type=module -e '
+                import fs from "node:fs";
+                const [path, from, to] = process.argv.slice(1);
+                const text = fs.readFileSync(path, "utf8");
+                const updated = text.replace(
+                  `"version": "${from}"`,
+                  `"version": "${to}"`,
+                );
+                if (updated === text) {
+                  throw new Error(`Could not update ${path}`);
+                }
+                fs.writeFileSync(path, updated);
+              ' "${manifest}" "${ch_version}" "${next_version}"
+            done
+            ch_version="${next_version}"
+            release_tag="v${ch_version}"
+          done
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- \
+            staticCh/manifest.json staticFf/manifest.json
+          then
+            git add staticCh/manifest.json staticFf/manifest.json
+            git commit \
+              -m "chore: bump version to ${ch_version} [skip ci]"
+            git push origin HEAD:master
+          fi
+          if ! git show-ref --tags --verify --quiet \
+            "refs/tags/${release_tag}"
+          then
+            git tag "${release_tag}"
+            git push origin "${release_tag}"
+          fi
+          echo "RELEASE_TAG=${release_tag}" >> "${GITHUB_ENV}"
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -122,11 +208,16 @@ jobs:
             ls -l "${artifacts[@]}"
             exit 0
           fi
-          tag="${GITHUB_REF_NAME}"
+          tag="${RELEASE_TAG:-${GITHUB_REF_NAME}}"
           if [ "${tag}" != "${expected_tag}" ]; then
             echo "::warning::Tag '${tag}' does not match manifest version '${expected_tag}'; releasing under tag '${tag}'."
           fi
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "Release ${tag} already exists; leaving it unchanged."
+            exit 0
+          fi
           gh release create "${tag}" "${artifacts[@]}" \
             --draft \
+            --verify-tag \
             --title "GlobalSpeed CE ${tag}" \
             --generate-notes
