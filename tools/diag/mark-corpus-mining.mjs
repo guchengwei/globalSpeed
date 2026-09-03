@@ -75,15 +75,12 @@ function extractKeys(text) {
 			if (hasLetter(phrase)) keys.add(phrase)
 		}
 	}
-	return [...keys]
+	return keys
 }
 
 function isNovel(key, knownValues) {
 	if (isStopwordOnly(key)) return false
-	return !knownValues.some((value) => {
-		const normalized = normalizeValue(value)
-		return normalized && (containsPhrase(normalized, key) || containsPhrase(key, normalized))
-	})
+	return !knownValues.some((value) => containsPhrase(value, key) || containsPhrase(key, value))
 }
 
 function distinctMarkedUrlCount(corpus) {
@@ -91,41 +88,44 @@ function distinctMarkedUrlCount(corpus) {
 }
 
 function mineKeywordCandidates(corpus, exclude, cap = CANDIDATE_CAP) {
-	const docsByUrl = new Map()
-	for (const entry of corpus ?? []) {
+	const latestByUrl = new Map()
+	for (const entry of corpus ?? []) latestByUrl.set(normalizePageUrl(entry.url), entry)
+
+	const knownValues = exclude.map(normalizeValue).filter(Boolean)
+	const novelCache = new Map()
+	const stats = new Map()
+	for (const entry of latestByUrl.values()) {
+		const weight = LABEL_WEIGHT[entry.label]
+		if (!weight) continue
+
 		const keys = new Set()
 		for (const segment of [entry.msTitle ?? "", entry.title ?? "", ...(entry.tags ?? [])]) {
 			if (!segment) continue
 			for (const key of extractKeys(segment.toLowerCase())) keys.add(key)
 		}
-		docsByUrl.set(normalizePageUrl(entry.url), { label: entry.label, keys })
-	}
-
-	const knownValues = exclude.map(normalizeValue).filter(Boolean)
-	const novelCache = new Map()
-	const scores = new Map()
-	const musicSupport = new Map()
-	for (const doc of docsByUrl.values()) {
-		const weight = LABEL_WEIGHT[doc.label]
-		if (!weight) continue
-		for (const key of doc.keys) {
+		for (const key of keys) {
 			let novel = novelCache.get(key)
 			if (novel == null) novelCache.set(key, (novel = isNovel(key, knownValues)))
 			if (!novel) continue
-			scores.set(key, (scores.get(key) ?? 0) + weight)
-			if (weight > 0) musicSupport.set(key, (musicSupport.get(key) ?? 0) + 1)
+
+			const current = stats.get(key)
+			if (current) {
+				current.score += weight
+				if (weight > 0) current.musicSupport++
+			} else {
+				stats.set(key, { score: weight, musicSupport: weight > 0 ? 1 : 0, words: key.split(" ").length })
+			}
 		}
 	}
 
-	const ranked = [...scores.entries()]
-		.filter(([value, score]) => score > 0 && (musicSupport.get(value) ?? 0) >= MIN_MUSIC_SUPPORT)
-		.map(([value, score]) => ({ value, score }))
-		.sort((a, b) => b.score - a.score || b.value.split(" ").length - a.value.split(" ").length || compareText(a.value, b.value))
+	const ranked = [...stats.entries()]
+		.filter(([, stat]) => stat.score > 0 && stat.musicSupport >= MIN_MUSIC_SUPPORT)
+		.sort(([aValue, a], [bValue, b]) => b.score - a.score || b.words - a.words || compareText(aValue, bValue))
 
 	const kept = []
-	for (const candidate of ranked) {
-		if (kept.some((k) => k.score === candidate.score && containsPhrase(k.value, candidate.value))) continue
-		kept.push(candidate)
+	for (const [value, { score }] of ranked) {
+		if (kept.some((candidate) => candidate.score === score && containsPhrase(candidate.value, value))) continue
+		kept.push({ value, score })
 		if (kept.length >= cap) break
 	}
 	return kept
